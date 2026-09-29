@@ -125,5 +125,27 @@ public class ClaudeReadme
     Finalization
         - Michael should be responsible for finalization
         - The other two can pitch in where needed
+
+    Notes for Adding Content (Michael)
+        - ItemCollection. Change and add Items here.
+        - LevelCollection. Add levels to CreateLevels().
+        - MachineCollection. Add processors under entries.
+        - MachineConstructor. Update GetSize(byte machineTypeIndex) for processor sizes. Make sure they match the class itself.
+        - RecipeCollection. Add Recipe under entries all. Add Recipes under machine specific.
+        - ShopCollection. CreateEntries(). Modify costs and add any new processors.
+        - MachineProcessor. For each processor type update: GetRecipes(), Getters (type), and Height
+        - Machine size must match inputs and outputs:
+            - Current MachineProcessor creation does: SetStandard( Height() );
+            - Which does: int count  = (height - 1) / 2;
+            - We get the following
+                - Height = 3 -> Count = 1
+                - Height = 5 -> Count = 2
+                - Height = 7 -> Count = 3
+                - Height = 9 -> Count = 4
+            - If height = 5 it gives count = 2 it will create 2 inputs and outputs. Like space, input, space, input, space
+            - Having a count max of 4 is fine. We don't need machines with more than 4 inputs and outputs
+            - Most machines should probably only have 1 output, but up to you
+            - Creating unused input / outputs is fine. They will be disabled. They don't exist at that point.
+            - Cannot assign a recipe that requires 2 inputs to a machine that only has 1 input. Machine must have 2 or more inputs.
     */
 }

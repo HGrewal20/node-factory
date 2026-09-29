@@ -21,14 +21,22 @@ using UnityEngine;
 
 public class MachineNode
 {
+    // Side
+    public const byte SIDE_NONE  = 0;
+    public const byte SIDE_TOP   = 1;
+    public const byte SIDE_LEFT  = 2;
+    public const byte SIDE_RIGHT = 3;
+    public const byte SIDE_BOT   = 4;
+
     // Member Variables
-    public bool         IsInput     { get; private set; }
-    public bool         IsEnabled   { get; private set; } // "Hides" or "Deactivates" the node
-    public int          Max         { get; private set; } // >= 1
-    public int          Amount      { get; private set; } // >= 0 && <= Max
-    public Vector2Int   Offset      { get; private set; } // Where it is connected on the machine
-    public Item         ItemAllowed { get; private set; } // If null accepts anything
-    public Item         ItemCurrent { get; private set; }
+    public  bool        IsInput     { get; private set; }
+    public  bool        IsEnabled   { get; private set; } // "Hides" or "Deactivates" the node
+    public  byte        Side        { get; private set; }
+    public  int         Max         { get; private set; } // >= 1
+    public  int         Amount      { get; private set; } // >= 0 && <= Max
+    public  Vector2Int  Offset      { get; private set; } // Where it is connected on the machine
+    public  Item        ItemAllowed { get; private set; } // If null accepts anything
+    public  Item        ItemCurrent { get; private set; }
     private long        WireID;                           // Only used to load and link
     public  MachineWire Wire        { get; private set; }
 
@@ -40,6 +48,13 @@ public class MachineNode
     {
         if (Wire != null)
             MachineOperations.Disconnect(Wire);
+    }
+
+    public bool CanConnect()
+    {
+        if ( !IsEnabled    )    return false;
+        if ( IsConnected() )    return false;
+        else                    return true;
     }
 
     // Transfer
@@ -93,6 +108,12 @@ public class MachineNode
         }
     }
 
+    // Side
+    public void SetSide(byte side)
+    {
+        Side = side;
+    }
+
     // Both
     public void SetOffset(Vector2Int offset)        { SetOffset(offset.x, offset.y); }
     public void SetOffset(int offsetX, int offsetY)
@@ -115,6 +136,11 @@ public class MachineNode
     public void SetWire(MachineWire wire)
     {
         Wire = wire;
+    }
+
+    public bool IsConnected()
+    {
+        return Wire != null;
     }
 
     public MachineWireConnection GetWireConnection()
@@ -213,6 +239,7 @@ public class MachineNode
 
         writer.WriteBool      (IsInput    );
         writer.WriteBool      (IsEnabled  );
+        writer.WriteByte      (Side       );
         writer.WriteInt       (Max        );
         writer.WriteInt       (Amount     );
         writer.WriteVector2Int(Offset     );
@@ -224,6 +251,7 @@ public class MachineNode
     {
         IsInput     = reader.ReadBool      ();
         IsEnabled   = reader.ReadBool      ();
+        Side        = reader.ReadByte      ();
         Max         = reader.ReadInt       ();
         Amount      = reader.ReadInt       ();
         Offset      = reader.ReadVector2Int();
@@ -242,6 +270,7 @@ public class MachineNode
 
         DebugFile.Log("IsInput:   " + IsInput  , indentation);
         DebugFile.Log("IsEnabled: " + IsEnabled, indentation);
+        DebugFile.Log("Side:      " + Side     , indentation);
         DebugFile.Log("Max:       " + Max      , indentation);
         DebugFile.Log("Amount:    " + Amount   , indentation);
         DebugFile.Log("Offset:    " + Offset   , indentation);

@@ -56,6 +56,24 @@ public class Machine
         Rect = new RectInt(Pos, Size);
     }
 
+    // Get
+    public MachineNode GetNode(Vector2Int pos)
+    {
+        Vector2Int offset = (pos - Pos);
+
+        MachineNode node;
+        node =  inputs.Get(offset);  if (node != null)   return node;
+        node = outputs.Get(offset);  if (node != null)   return node;
+        else                                             return null;
+    }
+
+    public bool Contains(MachineNode entry)
+    {
+        if ( inputs.Contains(entry) )   return true;
+        if (outputs.Contains(entry) )   return true;
+        else                            return false;
+    }
+
     // Processor
     public void DisableAllNodes()
     {

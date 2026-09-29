@@ -13,6 +13,16 @@ public class MachineWireConnection
     }
 
     // Connect
+    public bool TryConnect(int nodeIndex, Machine machine)  // Note: This entire system is nasty right now.
+    {
+        // If Already Connected -> Fail
+        if ( IsConnected() )
+            return false;
+
+        // Set
+        Set(nodeIndex, machine);
+        return true;
+    }
 
     // Disconnect
     public void Disconnect()
@@ -26,7 +36,7 @@ public class MachineWireConnection
     }
 
     // Set
-    public void Set(int nodeIndex, Machine machine)
+    private void Set(int nodeIndex, Machine machine)
     {
         NodeIndex = nodeIndex;
         Machine   = machine;
@@ -44,6 +54,10 @@ public class MachineWireConnection
         if (Machine == null)    return null;
         if (IsInput        )    return Machine.inputs;
         else                    return Machine.outputs;
+    }
+    public bool IsConnected()
+    {
+        return (Machine != null);
     }
 
     // Link

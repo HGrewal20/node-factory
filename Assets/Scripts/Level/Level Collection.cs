@@ -30,6 +30,7 @@ public static class LevelCollection
         level = new Level(0, "Test Level");
         level.mapSize.Set(1000, 1000);
         level.machinesStarting
+            .Modify(MachineCollection.WIRE             , 2)
             .Modify(MachineCollection.PROCESSOR_MINER  , 1)
             .Modify(MachineCollection.PROCESSOR_SMELTER, 1)
             .Modify(MachineCollection.DELIVERY         , 1);

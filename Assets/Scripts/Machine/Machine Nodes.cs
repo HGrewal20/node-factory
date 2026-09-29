@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public class MachineNodes
 {
@@ -21,24 +22,25 @@ public class MachineNodes
         entries.Add(entry);
         return entry;
     }
-    public MachineNode Add(bool isInput, bool isEnabled, int offsetX, int offsetY, int max = 1, Item itemAllowed = null)
+    public MachineNode Add(bool isInput, bool isEnabled, byte side, int offsetX, int offsetY, int max = 1, Item itemAllowed = null)
     {
         MachineNode entry = Add();
         entry.SetInput  (isInput         );
         entry.SetEnabled(isEnabled       );
+        entry.SetSide   (side            );
         entry.SetOffset (offsetX, offsetY);
         entry.SetAllowed(itemAllowed, max);
         return entry;
     }
-    public void AddInputsLeft                (bool isEnabled, int count,              int max = 1, Item itemAllowed = null) { AddMultiple( true, isEnabled, count,       0, max, itemAllowed); }
-    public void AddOutputsRight              (bool isEnabled, int count, int offsetX, int max = 1, Item itemAllowed = null) { AddMultiple(false, isEnabled, count, offsetX, max, itemAllowed); }
-    public void AddMultiple    (bool isInput, bool isEnabled, int count, int offsetX, int max = 1, Item itemAllowed = null)
+    public void AddInputsLeft                (bool isEnabled, int count,              int max = 1, Item itemAllowed = null) { AddMultiple( true, isEnabled, count,       0, max, itemAllowed, MachineNode.SIDE_LEFT ); }
+    public void AddOutputsRight              (bool isEnabled, int count, int offsetX, int max = 1, Item itemAllowed = null) { AddMultiple(false, isEnabled, count, offsetX, max, itemAllowed, MachineNode.SIDE_RIGHT); }
+    public void AddMultiple    (bool isInput, bool isEnabled, int count, int offsetX, int max = 1, Item itemAllowed = null, byte side = MachineNode.SIDE_NONE)
     {
         int offsetY = 1;
 
         for (int i = 0; i < count; i++)
         {
-            Add(isInput, isEnabled, offsetX, offsetY, max, itemAllowed);
+            Add(isInput, isEnabled, side, offsetX, offsetY, max, itemAllowed);
             offsetY += 2;
         }
     }
@@ -70,6 +72,16 @@ public class MachineNodes
                 return false;
                 
         return true;
+    }
+
+    public bool Contains(MachineNode entry)
+    {
+        return entries.Contains(entry);
+    }
+
+    public int IndexOf(MachineNode node)
+    {
+        return entries.IndexOf(node);
     }
 
     // Input
@@ -119,6 +131,16 @@ public class MachineNodes
     {
         foreach (MachineNode entry in entries)
             entry.Disconnect();
+    }
+
+    // Get
+    public MachineNode Get(Vector2Int offset)
+    {
+        foreach (MachineNode entry in entries)
+            if (entry.Offset == offset)
+                return entry;
+
+        return null;
     }
 
     // Link

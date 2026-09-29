@@ -5,17 +5,19 @@ using UnityEngine;
 public class MapMachines
 {
     // Member Variables
-    private Machine[,] machines;
-    private long   [,] IDs;
+    private Machine[,] machines;    // Never null
+    private long   [,] IDs;         // Never null
 
     // Constructor
-    public MapMachines() {}
+    public MapMachines()
+    {
+        Clear();
+    }
 
     // Clear
     public void Clear()
     {
-        machines = null;
-        IDs      = null;
+        Set(0, 0);
     }
 
     // Set
@@ -39,6 +41,15 @@ public class MapMachines
                     used++;
 
         return used;
+    }
+
+    public bool IsValid(Vector2Int position) { return IsValid(position.x, position.y); }
+    public bool IsValid(int x, int y)
+    {
+        return x >= 0                       &&
+               y >= 0                       &&
+               x <  machines.GetLength(0)   &&
+               y <  machines.GetLength(1);
     }
 
     public bool IsFree(RectInt rect) { return IsFree(rect.xMin, rect.yMin, rect.xMax, rect.yMax); }
@@ -69,6 +80,34 @@ public class MapMachines
                     result.Add(machines[x, y]);
 
         return result;
+    }
+
+    public Machine FindNext(Vector2Int position, Vector2Int direction, out Vector2Int foundPosition) { return FindNext(position, direction.x, direction.y, out foundPosition); }
+    public Machine FindNext(Vector2Int position, int dx, int dy      , out Vector2Int foundPosition)
+    {
+        foundPosition = default;
+
+        if (dx == 0 && dy == 0)
+            return null;
+
+        // Skip first point
+        int x = position.x + dx;
+        int y = position.y + dy;
+
+        while (IsValid(x, y))
+        {
+            Machine machine = machines[x, y];
+            if (machine != null)
+            {
+                foundPosition = new Vector2Int(x, y);
+                return machine;
+            }
+
+            x += dx;
+            y += dy;
+        }
+
+        return null;
     }
 
     // Add & Remove
@@ -137,12 +176,6 @@ public class MapMachines
     {
         DebugFile.Log("MapMachines", indentation);
         indentation++;
-
-        if (machines == null)
-        {
-            DebugFile.Log("Null", indentation);
-            return;
-        }
 
         int width  = machines.GetLength(0);
         int height = machines.GetLength(1);

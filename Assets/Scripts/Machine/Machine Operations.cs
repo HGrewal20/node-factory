@@ -1,25 +1,84 @@
 // Use this class to make changes to the machines
-// Wire Connections:
-//      Machine -> Machine Nodes (inputs & outputs) -> Machine Node
-//      To
-//      Machine Wire -> Machine Wire Connection (input & output)
 using UnityEngine;
 
 public static class MachineOperations
 {
     // Try Connect
-    public static bool TryConnect(
-        Machine  inputMachine, int  inputNodeIndex,     // Wire Input  = Machine Output
-        Machine outputMachine, int outputNodeIndex)     // Wire Output = Machine Input
+    public static bool TryConnect(Machine oneMachine, MachineNode oneNode)
     {
+        // Fail if Not Contained
+        if ( !oneMachine.Contains(oneNode) )
+            return false;
+
+        // Fail if can't connect
+        if ( !oneNode.CanConnect() )
+            return false;
+
+        // Get Direction
+        int dx = 0;
+        int dy = 0;
+
+        switch (oneNode.Side)
+        {
+            case MachineNode.SIDE_NONE:             return false;
+            case MachineNode.SIDE_TOP:   dy = +1;   break;
+            case MachineNode.SIDE_LEFT:  dx = -1;   break;
+            case MachineNode.SIDE_RIGHT: dx = +1;   break;
+            case MachineNode.SIDE_BOT:   dy = -1;   break;
+        }
+
+        // Find Next Machine
+        Vector2Int pos = (oneMachine.Pos + oneNode.Offset);
+        
+        Machine twoMachine = GameData.INSTANCE.map.mapMachines.FindNext(pos, dx, dy, out Vector2Int machinePosition);
+        if (twoMachine == null)
+            return false;
+
+        // Find Node
+        MachineNode twoNode = twoMachine.GetNode(machinePosition);
+        if (twoNode == null)
+            return false;
+
+        // Fail if can't connect
+        if ( !oneNode.CanConnect() )
+            return false;
+
+        // Fail If Invalid Types -> Need one input and one output
+        if (oneNode.IsInput == twoNode.IsInput)
+            return false;
+
         // If No Free Wire Available -> Fail
         GameData data = GameData.INSTANCE;
         if (data.machinesAvailable.AmountWire() < 1)
             return false;
 
-        // Get Nodes to Connect
-        MachineNode inputNode  = inputMachine .outputs.Get( inputNodeIndex);
-        MachineNode outputNode = outputMachine.inputs .Get(outputNodeIndex);
+        // Normalize connection:
+        //
+        // inputMachine  / inputNode  = machine OUTPUT
+        // outputMachine / outputNode = machine INPUT
+        //
+        Machine     inputMachine;
+        MachineNode inputNode;
+
+        Machine     outputMachine;
+        MachineNode outputNode;
+
+        if (!oneNode.IsInput)
+        {
+            inputMachine  = oneMachine;
+            inputNode     = oneNode;
+
+            outputMachine = twoMachine;
+            outputNode    = twoNode;
+        }
+        else
+        {
+            inputMachine  = twoMachine;
+            inputNode     = twoNode;
+
+            outputMachine = oneMachine;
+            outputNode    = oneNode;
+        }
 
         // Check Position
         Vector2Int inputPos  = (inputMachine .Pos + inputNode .Offset);
@@ -47,7 +106,7 @@ public static class MachineOperations
             direction = MachineWire.DIRECTION_RIGHT;
         }
         // Try Vertical Connection
-        if (inputPos.x == outputPos.x)
+        else if (inputPos.x == outputPos.x)
         {
             if (inputPos.y < outputPos.y)   direction = MachineWire.DIRECTION_UP;
             else                            direction = MachineWire.DIRECTION_DOWN;
@@ -56,7 +115,7 @@ public static class MachineOperations
             int y1 = Mathf.Max(inputPos.y, outputPos.y);
 
             int height = (y1 - y0);
-            if (height < 1)
+            if (height < 2)
                 return false;
 
             int x  = inputPos.x;
@@ -83,9 +142,44 @@ public static class MachineOperations
         // Set Wire Direction
         MachineWire wire = (MachineWire) machine;
         wire.SetDirection(direction);
+
+        // Link
+        int  inputIndex =  inputMachine.outputs.IndexOf( inputNode);
+        int outputIndex = outputMachine.inputs .IndexOf(outputNode);
+
+        Debug.Assert(inputIndex  >= 0);     // Should never happen. Safety Check.
+        Debug.Assert(outputIndex >= 0);
+
+        bool isConnectedInput  = wire.connectionInput .TryConnect( inputIndex,  inputMachine);
+        bool isConnectedOutput = wire.connectionOutput.TryConnect(outputIndex, outputMachine);
+
+        Debug.Assert(isConnectedInput , "MachineOperations.TryConnect - Failed to Connect Input" ); // Should never happen. Safety Check.
+        Debug.Assert(isConnectedOutput, "MachineOperations.TryConnect - Failed to Connect Output"); // Already checked to be free so should be fine.
+
+         inputNode.SetWire(wire);
+        outputNode.SetWire(wire);
         
         // Worked
         return true;
+    }
+    public static int TryConnectAll(Machine machine)
+    {
+        return  TryConnectAll(machine, machine.inputs ) + 
+                TryConnectAll(machine, machine.outputs); 
+    }
+    private static int TryConnectAll(Machine machine, MachineNodes nodes)
+    {
+        int connections = 0;
+
+        int count = nodes.Count();
+        for (int i = 0; i < count; i++)
+        {
+            MachineNode node = nodes.Get(i);
+            if ( TryConnect(machine, node) )
+                connections++;
+        }
+
+        return connections;
     }
 
     // Disconnect
