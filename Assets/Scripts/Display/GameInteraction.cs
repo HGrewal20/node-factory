@@ -94,8 +94,6 @@ public class GameInteraction : MonoBehaviour
 
             e.Use();
         }
-
-        DrawHint();
     }
 
     private bool InBounds(GameData data, Vector2Int gridPos)
@@ -128,11 +126,25 @@ public class GameInteraction : MonoBehaviour
             MachineOperations.RemoveMachine(machine);
     }
 
-    private void DrawHint()
+    // Called by GameDisplay, right after it finishes drawing the grid,
+    // so this always ends up on top no matter what order Unity happens
+    // to call each script's OnGUI in.
+    public void DrawHint()
     {
         string name = MachineCollection.Get(selectedType).Name;
+        Rect rect = new Rect(10, 10, 420, 130);
 
-        GUI.Label(new Rect(10, 10, 420, 130),
+        // Dark backing panel first, so the text stays readable no matter
+        // what color the grid/machines underneath happen to be.
+        GUI.color = new Color(0f, 0f, 0f, 0.55f);
+        GUI.DrawTexture(rect, Texture2D.whiteTexture);
+
+        // GUI.contentColor only tints the text (not the panel above),
+        // so this doesn't fight with the background color.
+        GUI.color = Color.white;
+        GUI.contentColor = new Color(1f, 0.95f, 0.4f); // bright, easy to read
+
+        GUI.Label(rect,
             "Placing: " + name + "\n" +
             "Left click empty cell: place it\n" +
             "Left click a machine's node: connect it\n" +
@@ -141,6 +153,8 @@ public class GameInteraction : MonoBehaviour
             "5 Merger  6 Flipper  7 Junction\n\n" +
             "WASD/arrows: pan   Scroll wheel: zoom"
         );
+
+        GUI.contentColor = Color.white; // reset so it doesn't leak elsewhere
     }
 
     private int KeyToNumber(KeyCode key)
