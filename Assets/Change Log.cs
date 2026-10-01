@@ -4,6 +4,17 @@ public class ChangeLog
     /*
     We can share changes here
 
+    October 1, 2026 - Michael (temp test harnesses)
+    Two disposable self-installing scripts in Assets/Scripts/Tools, needed to actually see
+    the sim run while the real recipe UI and HUD are still missing. Both self-install via
+    [RuntimeInitializeOnLoadMethod] and nothing else references them. TO REMOVE: delete the
+    file (and its .meta). Harjap: your real recipe UI / HUD / level-complete popup replace these.
+    - DebugAutoRecipe.cs: each tick, gives any placed processor with Recipe == null its FIRST
+      recipe (SetRecipe(0)). Without it no processor ever runs, because SetRecipe() is never
+      called until the recipe UI exists.
+    - DebugHudOverlay.cs: top-right debug panel (GUI.depth = -1000) showing each processor's
+      recipe/state, delivery goal progress, completion %, time, and ">>> LEVEL COMPLETE! <<<".
+
     Sept 30, 2026 - Michael (code TEST-FIXES only)
     Temporary, reversible fixes in core files so a miner -> smelter -> delivery
     chain actually runs while the real recipe UI / HUD are still missing. Matthew: please
@@ -12,6 +23,8 @@ public class ChangeLog
     - Machine Nodes.cs, IsAllFull()/IsAllEmpty(). Revert = delete the two "continue" lines.
     - Machine Operations.cs, TryConnect(): the two connection calls were passed the wrong
       machine/index pair; swapped them. Revert = swap the two argument pairs back.
+
+
 
     Sept 29, 2026 - Matthew
     - Added starting wires to test level
