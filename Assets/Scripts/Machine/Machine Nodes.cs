@@ -59,8 +59,15 @@ public class MachineNodes
     public bool IsAllFull()
     {
         foreach (MachineNode entry in entries)
+        {
+            // TEST-FIX (Michael, Sept 30): disabled nodes "don't exist" (see Claude Readme).
+            // Without this, a Miner (0-input recipe) keeps its disabled input node in the list,
+            // IsAllFull() is never true, and it never runs. Revert = delete this continue line.
+            if ( !entry.IsEnabled )   continue;
+
             if ( !entry.IsFull() )
                 return false;
+        }
 
         return true;
     }
@@ -68,9 +75,14 @@ public class MachineNodes
     public bool IsAllEmpty()
     {
         foreach (MachineNode entry in entries)
+        {
+            // TEST-FIX (Michael, Sept 30): mirror of IsAllFull() above. Revert = delete this continue line.
+            if ( !entry.IsEnabled )   continue;
+
             if ( !entry.IsEmpty() )
                 return false;
-                
+        }
+
         return true;
     }
 
