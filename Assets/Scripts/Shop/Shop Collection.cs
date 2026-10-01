@@ -25,7 +25,7 @@ public static class ShopCollection
     // Create Entries
     private static ShopEntry AddEntry(List<ShopEntry> entries, MachineType machineType)
     {
-        ShopEntry entry = new ShopEntry(MachineCollection.PROCESSOR_SMELTER);
+        ShopEntry entry = new ShopEntry(machineType);
         entries.Add(entry);
         return entry;
     }

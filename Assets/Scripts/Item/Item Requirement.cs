@@ -30,7 +30,7 @@ public class ItemRequirement
         if (Required == 0)
             return 1f;
 
-        float completion = (float) (Amount / Required);
+        float completion = Amount / (float) Required;
         if (completion > 1f)
             completion = 1f;
         return completion;

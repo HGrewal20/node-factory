@@ -150,14 +150,8 @@ public static class MachineOperations
         Debug.Assert(inputIndex  >= 0);     // Should never happen. Safety Check.
         Debug.Assert(outputIndex >= 0);
 
-        // TEST-FIX (Michael, Sept 30): the two connections were passed the wrong machine/index pair.
-        // connectionInput reads Machine.inputs, so it must get the DEST machine (outputMachine) with the
-        // index into dest.inputs (outputIndex). connectionOutput reads Machine.outputs, so it must get the
-        // SOURCE machine (inputMachine) with the index into source.outputs (inputIndex). The old order read
-        // the wrong list; on a Delivery (1 input, 0 outputs) that threw ArgumentOutOfRangeException every tick.
-        // Revert = swap the two argument pairs back. Matthew: please review, this is your wire code.
         bool isConnectedInput  = wire.connectionInput .TryConnect( outputIndex, outputMachine);
-        bool isConnectedOutput = wire.connectionOutput.TryConnect( inputIndex,  inputMachine);
+        bool isConnectedOutput = wire.connectionOutput.TryConnect( inputIndex,   inputMachine);
 
         Debug.Assert(isConnectedInput , "MachineOperations.TryConnect - Failed to Connect Input" ); // Should never happen. Safety Check.
         Debug.Assert(isConnectedOutput, "MachineOperations.TryConnect - Failed to Connect Output"); // Already checked to be free so should be fine.
