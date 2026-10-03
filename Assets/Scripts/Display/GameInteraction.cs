@@ -129,32 +129,52 @@ public class GameInteraction : MonoBehaviour
     // Called by GameDisplay, right after it finishes drawing the grid,
     // so this always ends up on top no matter what order Unity happens
     // to call each script's OnGUI in.
+    private GUIStyle hintTitleStyle;
+    private GUIStyle hintBodyStyle;
+
     public void DrawHint()
     {
+        EnsureHintStyles();
+
         string name = MachineCollection.Get(selectedType).Name;
-        Rect rect = new Rect(10, 10, 420, 130);
 
-        // Dark backing panel first, so the text stays readable no matter
-        // what color the grid/machines underneath happen to be.
-        GUI.color = new Color(0f, 0f, 0f, 0.55f);
-        GUI.DrawTexture(rect, Texture2D.whiteTexture);
+        // Responsive: scales with the window instead of a fixed pixel
+        // size (same clamp pattern GameMenu uses for its own panels), so
+        // this doesn't overflow a small window or look tiny on a big one.
+        float w = Mathf.Clamp(Screen.width  * 0.32f, 320f, 470f);
+        float h = Mathf.Clamp(Screen.height * 0.30f, 175f, 215f);
+        Rect rect = new Rect(10, 10, w, h);
 
-        // GUI.contentColor only tints the text (not the panel above),
-        // so this doesn't fight with the background color.
-        GUI.color = Color.white;
-        GUI.contentColor = new Color(1f, 0.95f, 0.4f); // bright, easy to read
+        // Same glass panel + glow + accent bar as the main menu, instead
+        // of the old flat black box - this is purely visual, no behavior
+        // changed here.
+        UiTheme.DrawPanel(rect);
 
-        GUI.Label(rect,
-            "Placing: " + name + "\n" +
+        Rect inner = new Rect(rect.x + 16f, rect.y + 10f, rect.width - 32f, rect.height - 20f);
+
+        GUILayout.BeginArea(inner);
+        GUILayout.Label("Placing: " + name, hintTitleStyle);
+        GUILayout.Space(4);
+        GUILayout.Label(
             "Left click empty cell: place it\n" +
             "Left click a machine's node: connect it\n" +
             "Right click a machine: remove it\n\n" +
             "1 Miner  2 Smelter  3 Delivery  4 Splitter\n" +
             "5 Merger  6 Flipper  7 Junction\n\n" +
-            "WASD/arrows: pan   Scroll wheel: zoom"
+            "WASD/arrows: pan   Scroll wheel: zoom\n" +
+            "B: open shop   Escape: pause",
+            hintBodyStyle
         );
+        GUILayout.EndArea();
+    }
 
-        GUI.contentColor = Color.white; // reset so it doesn't leak elsewhere
+    private void EnsureHintStyles()
+    {
+        if (hintTitleStyle != null)
+            return;
+
+        hintTitleStyle = UiTheme.MakeLabelStyle(18, FontStyle.Bold, UiTheme.ACCENT_COLOR);
+        hintBodyStyle  = UiTheme.MakeLabelStyle(15, FontStyle.Normal, new Color(0.85f, 0.90f, 0.92f));
     }
 
     private int KeyToNumber(KeyCode key)

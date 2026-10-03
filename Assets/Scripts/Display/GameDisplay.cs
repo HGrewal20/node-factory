@@ -16,6 +16,7 @@ public class GameDisplay : MonoBehaviour
     private Texture2D pixel;
 
     private GameInteraction interaction;
+    private GameHud         hud;
 
     void Awake()
     {
@@ -25,7 +26,12 @@ public class GameDisplay : MonoBehaviour
         if ( GetComponent<GameEngine>() == null )
             gameObject.AddComponent<GameEngine>();
 
+        // Same deal for the HUD (resources/shop/progress panel).
+        if ( GetComponent<GameHud>() == null )
+            gameObject.AddComponent<GameHud>();
+
         interaction = GetComponent<GameInteraction>();
+        hud         = GetComponent<GameHud>();
     }
 
     void Start()
@@ -65,10 +71,13 @@ public class GameDisplay : MonoBehaviour
             DrawNodes  (mapView, machine);
         }
 
-        // Drawn last on purpose, so the hint text always ends up on top
-        // of the grid instead of underneath it.
+        // Drawn last on purpose, so the hint text and HUD always end up
+        // on top of the grid instead of underneath it.
         if (interaction != null)
             interaction.DrawHint();
+
+        if (hud != null)
+            hud.DrawHud();
     }
 
     // Draws every empty cell in view as a solid square, inset by 1 pixel
