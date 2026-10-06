@@ -35,7 +35,7 @@ public static class ShopCollection
         AddEntry(entries, MachineCollection.DELIVERY         ).cost.Add(ItemCollection.IRON_PLATE, 20);     // Delivery
         AddEntry(entries, MachineCollection.FLIPPER_2        ).cost.Add(ItemCollection.IRON_PLATE,  5);     // Flippers
         AddEntry(entries, MachineCollection.FLIPPER_3        ).cost.Add(ItemCollection.IRON_PLATE,  8);
-        AddEntry(entries, MachineCollection.FLIPPER_2        ).cost.Add(ItemCollection.IRON_PLATE, 10);
+        AddEntry(entries, MachineCollection.FLIPPER_4        ).cost.Add(ItemCollection.IRON_PLATE, 10);     // Fixed the duplicate FLIPPER_2 to FLIPPER_4 (Michael)
         AddEntry(entries, MachineCollection.JUNCTION_A       ).cost.Add(ItemCollection.IRON_PLATE,  2);     // Junctions
         AddEntry(entries, MachineCollection.JUNCTION_B       ).cost.Add(ItemCollection.IRON_PLATE,  2);
         AddEntry(entries, MachineCollection.MERGER_2         ).cost.Add(ItemCollection.IRON_PLATE,  5);     // Mergers

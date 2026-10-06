@@ -27,7 +27,21 @@ public static class LevelCollection
         List<Level> entries = new();
         Level level = null;
 
-        level = new Level(0, "Test Level");
+        // Level 0 - First Factory. Short on purpose for the video: (Michael)
+        // place Miner -> Smelter -> Delivery, connect them, wait about 20 seconds.  (Michael)    
+        level = new Level(0, "First Factory");
+        level.mapSize.Set(100, 100);
+        level.machinesStarting
+            .Modify(MachineCollection.WIRE             , 4)
+            .Modify(MachineCollection.PROCESSOR_MINER  , 1)
+            .Modify(MachineCollection.PROCESSOR_SMELTER, 1)
+            .Modify(MachineCollection.DELIVERY         , 1);
+        level.deliveryGoal
+            .Add(ItemCollection.IRON_PLATE,  10);
+        entries.Add(level);
+
+        // Level 1 - Test Level (kept for testing)
+        level = new Level(1, "Test Level");
         level.mapSize.Set(1000, 1000);
         level.machinesStarting
             .Modify(MachineCollection.WIRE             , 2)
