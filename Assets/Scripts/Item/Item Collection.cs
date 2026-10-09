@@ -28,7 +28,11 @@ public static class ItemCollection
             entry.Debug(indentation);
     }
 
-    // Entries
-    public static readonly Item IRON_ORE   = Add(0, "Iron Ore"  );
-    public static readonly Item IRON_PLATE = Add(1, "Iron Plate");
+    // Entries - Circuit Theme (Michael)
+    public static readonly Item SILICON = Add(0, "Silicon"      );
+    public static readonly Item WAFER   = Add(1, "Wafer"        );
+    public static readonly Item COPPER  = Add(2, "Copper"       );
+    public static readonly Item TRACE   = Add(3, "Copper Trace" );
+    public static readonly Item CHIP    = Add(4, "Chip"         );
+    public static readonly Item BOARD   = Add(5, "Circuit Board");
 }

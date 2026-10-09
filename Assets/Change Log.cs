@@ -4,6 +4,14 @@ public class ChangeLog
     /*
     We can share changes here
 
+    October 9, 2026 - Michael
+    Add circuit theme items and recipes
+    - Renamed Iron Ore to Silicon and Iron Plate to Wafer
+    - Added items: Copper, Copper Trace, Chip, Circuit Board
+    - Added recipes: Mine Copper, Draw Trace, Etch Chip, Print Board
+    - Removed the duplicate Mine Iron Ore line from the Miner recipes
+    - Level Collection and Shop Collection only updated for the new item names
+
     October 1, 2026 - Michael (temp test harnesses)
     Two disposable self-installing scripts in Assets/Scripts/Tools, needed to actually see
     the sim run while the real recipe UI and HUD are still missing. Both self-install via

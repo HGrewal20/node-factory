@@ -37,7 +37,7 @@ public static class LevelCollection
             .Modify(MachineCollection.PROCESSOR_SMELTER, 1)
             .Modify(MachineCollection.DELIVERY         , 1);
         level.deliveryGoal
-            .Add(ItemCollection.IRON_PLATE,  10);
+            .Add(ItemCollection.WAFER     ,  10);
         entries.Add(level);
 
         // Level 1 - Test Level (kept for testing)
@@ -49,11 +49,11 @@ public static class LevelCollection
             .Modify(MachineCollection.PROCESSOR_SMELTER, 1)
             .Modify(MachineCollection.DELIVERY         , 1);
         level.deliveryStarting
-            .Add(ItemCollection.IRON_ORE  ,  10)
-            .Add(ItemCollection.IRON_PLATE,   5);
+            .Add(ItemCollection.SILICON   ,  10)
+            .Add(ItemCollection.WAFER     ,   5);
         level.deliveryGoal
-            .Add(ItemCollection.IRON_ORE  , 200)
-            .Add(ItemCollection.IRON_PLATE, 500);
+            .Add(ItemCollection.SILICON   , 200)
+            .Add(ItemCollection.WAFER     , 500);
         entries.Add(level);
 
         return entries;
