@@ -4,6 +4,16 @@ public class ChangeLog
     /*
     We can share changes here
 
+    October 9, 2026 - Matthew
+    - Improved some collections so that the index is computed and no longer passed in
+    - Changed limits on MapSize to allow smaller maps. Updated current levels based on that.
+    - Updated MapView
+      - Better design
+      - Claps the map within the screen instead of to corners. Small maps stay in the center.
+      - Limits sizes to integer values, which should make display look much better at different zoom levels
+      - May need to update display and scroll speeds
+      - There is a small concern with the new positioning system. We will fix later if needed.
+
     October 9, 2026 - Michael
     Add circuit theme items and recipes
     - Renamed Iron Ore to Silicon and Iron Plate to Wafer
@@ -23,7 +33,7 @@ public class ChangeLog
     - DebugHudOverlay.cs: top-right debug panel (GUI.depth = -1000) showing each processor's
       recipe/state, delivery goal progress, completion %, time, and ">>> LEVEL COMPLETE! <<<".
 
-    Sept 30, 2026 - Michael (code TEST-FIXES only)
+    Sept 30, 2026 - Michael (code TEST-FIXES only) -> Matthew (Changes are good. I approve.)
     Temporary, reversible fixes in core files so a miner -> smelter -> delivery
     chain actually runs while the real recipe UI / HUD are still missing. Matthew: please
     review, both of these. Each spot is marked "TEST-FIX (Michael, Sept 30)"
@@ -31,8 +41,6 @@ public class ChangeLog
     - Machine Nodes.cs, IsAllFull()/IsAllEmpty(). Revert = delete the two "continue" lines.
     - Machine Operations.cs, TryConnect(): the two connection calls were passed the wrong
       machine/index pair; swapped them. Revert = swap the two argument pairs back.
-
-
 
     Sept 29, 2026 - Matthew
     - Added starting wires to test level

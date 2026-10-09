@@ -3,8 +3,8 @@ using UnityEngine;
 public class MapSize
 {
     // Static Variables
-    public const int VALUE_MIN =  100;
-    public const int VALUE_MAX = 1000;
+    public const int VALUE_MIN =  15;
+    public const int VALUE_MAX = 200;
 
     // Member Variables
     public int Width  { get; private set; }

@@ -5,8 +5,9 @@ public static class RecipeCollection
 {
     // Collection
     private static readonly List<Recipe> ENTRIES = new();
-    private static Recipe Add(byte index, String name, int timeSecs, ItemAmounts inputs, ItemAmounts outputs)
+    private static Recipe Add(String name, int timeSecs, ItemAmounts inputs, ItemAmounts outputs)
     {
+        byte index = (byte) ENTRIES.Count;
         Recipe entry = new Recipe(index, name, timeSecs, inputs, outputs);
         ENTRIES.Add(entry);
         return entry;
@@ -29,22 +30,22 @@ public static class RecipeCollection
     }
 
     // Entries - All - Circuit Theme (Michael)
-    public static readonly Recipe MINE_SILICON = Add(0, "Mine Silicon", 1, 
+    public static readonly Recipe MINE_SILICON = Add("Mine Silicon", 1, 
                                                     null,
                                                     new ItemAmounts().Add(ItemCollection.SILICON, 1) );
-    public static readonly Recipe REFINE_WAFER = Add(1, "Refine Wafer", 2, 
+    public static readonly Recipe REFINE_WAFER = Add("Refine Wafer", 2, 
                                                     new ItemAmounts().Add(ItemCollection.SILICON, 1),
                                                     new ItemAmounts().Add(ItemCollection.WAFER  , 1) );
-    public static readonly Recipe MINE_COPPER  = Add(2, "Mine Copper" , 2, 
+    public static readonly Recipe MINE_COPPER  = Add("Mine Copper" , 2, 
                                                     null,
                                                     new ItemAmounts().Add(ItemCollection.COPPER , 1) );
-    public static readonly Recipe DRAW_TRACE   = Add(3, "Draw Trace"  , 1, 
+    public static readonly Recipe DRAW_TRACE   = Add("Draw Trace"  , 1, 
                                                     new ItemAmounts().Add(ItemCollection.COPPER , 1),
                                                     new ItemAmounts().Add(ItemCollection.TRACE  , 2) );
-    public static readonly Recipe ETCH_CHIP    = Add(4, "Etch Chip"   , 4, 
+    public static readonly Recipe ETCH_CHIP    = Add("Etch Chip"   , 4, 
                                                     new ItemAmounts().Add(ItemCollection.WAFER  , 3),
                                                     new ItemAmounts().Add(ItemCollection.CHIP   , 1) );
-    public static readonly Recipe PRINT_BOARD  = Add(5, "Print Board" , 5, 
+    public static readonly Recipe PRINT_BOARD  = Add("Print Board" , 5, 
                                                     new ItemAmounts().Add(ItemCollection.TRACE  , 4),
                                                     new ItemAmounts().Add(ItemCollection.BOARD  , 1) );
 

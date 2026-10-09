@@ -2,25 +2,30 @@ using UnityEngine;
 
 public class MapView
 {
-    // Static Variables
-    public const float ZOOM_MIN             = 0.5f;
-    public const float ZOOM_MAX             = 4.0f;
-    public const float BASE_VISIBLE_HEIGHT  = 40.0f;
+    // Constants
+    public const int   PIXELS_MIN     =  8;
+    public const int   PIXELS_MAX     = 40;
+    public const int   PIXELS_DEFAULT = 20;
+
+    public const float ZOOM_MIN       = 1.0f;
+    public const float ZOOM_MAX       = PIXELS_MAX     / (float) PIXELS_MIN;
+    public const float ZOOM_DEFAULT   = PIXELS_DEFAULT / (float) PIXELS_MIN;
 
     // Member Variables
-    private MapSize mapSize         = new MapSize();
-    public  Vector2 Center           { get; private set; }
-    public  float   Zoom             { get; private set; }  // Higher zoom = more zoomed in
+    private readonly MapSize mapSize = new MapSize();
 
-    // Visible size in grid units.
-    public  float   VisibleWidth     { get; private set; }
-    public  float   VisibleHeight    { get; private set; }
+    public Vector2 Center        { get; private set; }
+    public float   Zoom          { get; private set; }
+
+    // Visible size in grid cells.
+    public int     VisibleWidth  { get; private set; }
+    public int     VisibleHeight { get; private set; }
 
     // Visible grid cells. Min and max are inclusive.
-    public  int     XMin             { get; private set; }  // Left
-    public  int     XMax             { get; private set; }  // Right
-    public  int     YMin             { get; private set; }  // Bot
-    public  int     YMax             { get; private set; }  // Top
+    public int     XMin          { get; private set; }
+    public int     XMax          { get; private set; }
+    public int     YMin          { get; private set; }
+    public int     YMax          { get; private set; }
 
     // Constructor
     public MapView()
@@ -31,48 +36,45 @@ public class MapView
     // Clear
     public void Clear()
     {
-        mapSize       .Clear();
-        SetCenter     (Vector2.zero);
-        SetZoom       (1.0f        );
+        mapSize.Clear();
 
-        VisibleWidth  = 0f;
-        VisibleHeight = 0f;
+        Center = Vector2.zero;
+        Zoom   = ZOOM_DEFAULT;
 
-        XMin          = 0;
-        XMax          = 0;
-        YMin          = 0;
-        YMax          = 0;
+        UpdateView();
     }
 
     // Map Size
     public void Set(MapSize other)
     {
-        Clear    ();
-        mapSize  .Set(other);
-        SetCenter();
+        mapSize.Set(other);
+
+        Center = new Vector2(mapSize.Width * 0.5f, mapSize.Height * 0.5f);
+        Zoom   = ZOOM_DEFAULT;
+
+        UpdateView();
     }
 
     // Center
-    public void SetCenter()                 { SetCenter(mapSize.Width / 2f, mapSize.Height / 2f); }
-    public void SetCenter(Vector2 center)   { SetCenter(center.x          , center.y           ); }
+    public void SetCenter()               { SetCenter(mapSize.Width * 0.5f, mapSize.Height * 0.5f); }
+    public void SetCenter(Vector2 center) { SetCenter(center.x, center.y); }
+
     public void SetCenter(float x, float y)
     {
-        Center = new Vector2(
-            Mathf.Clamp(x, 0f, mapSize.Width ),
-            Mathf.Clamp(y, 0f, mapSize.Height)
-        );
+        Center = new Vector2(x, y);
+        UpdateView();
     }
 
     public void Scroll(Vector2 delta)
     {
-        delta /= Zoom;
-        SetCenter(Center + delta);
+        SetCenter(Center + delta / Zoom);
     }
 
     // Zoom
     public void SetZoom(float zoom)
     {
         Zoom = Mathf.Clamp(zoom, ZOOM_MIN, ZOOM_MAX);
+        UpdateView();
     }
 
     public void ZoomScale(float scale)
@@ -82,63 +84,74 @@ public class MapView
 
     public void ZoomChange(float delta)
     {
-        if (delta > 0)      ZoomScale(     (1f + delta) / 1f);
-        else                ZoomScale(1f / (1f - delta)     );
+        if (delta > 0f) ZoomScale( (1f + delta) /  1f           );
+        else            ZoomScale(           1f / (1f - delta)  );
     }
 
     // Game Tick
     public void GameTick()
     {
-        // Determine how much of the grid fits on screen.
-        float aspect = (Screen.height > 0) ? (float)Screen.width / Screen.height : 1.0f;
+        UpdateView();
+    }
 
-        VisibleHeight = (BASE_VISIBLE_HEIGHT / Zoom  );
-        VisibleWidth  = (VisibleHeight       * aspect);
+    // Update View
+    private void UpdateView()
+    {
+        int pixels = Mathf.RoundToInt(PIXELS_MIN * Zoom);
 
-        // Determine exact visible edges.
-        float halfWidth  = (VisibleWidth  * 0.5f);
-        float halfHeight = (VisibleHeight * 0.5f);
+        VisibleWidth  = Mathf.Max(1, Mathf.RoundToInt(Screen.width  / pixels));
+        VisibleHeight = Mathf.Max(1, Mathf.RoundToInt(Screen.height / pixels));
 
-        float left       = (Center.x - halfWidth );
-        float right      = (Center.x + halfWidth );
-        float bottom     = (Center.y - halfHeight);
-        float top        = (Center.y + halfHeight);
+        // Clamp center while accounting for the visible area.
+        float halfWidth  = VisibleWidth  * 0.5f;
+        float halfHeight = VisibleHeight * 0.5f;
 
-        // Convert visible area to grid cells.
-        XMin = (int) left;
-        XMax = (int) right;
+        float x = (mapSize.Width <= VisibleWidth)
+            ? mapSize.Width * 0.5f
+            : Mathf.Clamp(Center.x, halfWidth, mapSize.Width - halfWidth);
 
-        YMin = (int) bottom;
-        YMax = (int) top;
+        float y = (mapSize.Height <= VisibleHeight)
+            ? mapSize.Height * 0.5f
+            : Mathf.Clamp(Center.y, halfHeight, mapSize.Height - halfHeight);
 
-        // Clamp to map.
-        XMin = Mathf.Clamp(XMin, 0, mapSize.Width  - 1);
-        XMax = Mathf.Clamp(XMax, 0, mapSize.Width  - 1);
+        Center = new Vector2(x, y);
 
-        YMin = Mathf.Clamp(YMin, 0, mapSize.Height - 1);
-        YMax = Mathf.Clamp(YMax, 0, mapSize.Height - 1);
+        // Determine visible cell bounds.
+        float left   = Center.x - halfWidth;
+        float right  = Center.x + halfWidth;
+        float bottom = Center.y - halfHeight;
+        float top    = Center.y + halfHeight;
+
+        XMin = Mathf.Max(0, Mathf.FloorToInt(left));
+        XMax = Mathf.Min(mapSize.Width - 1, Mathf.CeilToInt(right) - 1);
+
+        YMin = Mathf.Max(0, Mathf.FloorToInt(bottom));
+        YMax = Mathf.Min(mapSize.Height - 1, Mathf.CeilToInt(top) - 1);
     }
 
     // Conversion
     public Vector2 ScreenToGrid(Vector2 screenPosition)
     {
-        float xPercent = screenPosition.x / Screen.width;
-        float yPercent = screenPosition.y / Screen.height;
+        float width  = Mathf.Max(1, Screen.width );
+        float height = Mathf.Max(1, Screen.height);
 
-        float x = Center.x + ((xPercent - 0.5f) * VisibleWidth );
-        float y = Center.y + ((yPercent - 0.5f) * VisibleHeight);
+        float xPercent = screenPosition.x / width;
+        float yPercent = screenPosition.y / height;
+
+        float x = Center.x + (xPercent - 0.5f) * VisibleWidth;
+        float y = Center.y + (yPercent - 0.5f) * VisibleHeight;
 
         return new Vector2(x, y);
     }
 
     public Vector2Int ScreenToGridInt(Vector2 screenPosition)
     {
-        Vector2 gridPosition = ScreenToGrid(screenPosition);
+        Vector2 position = ScreenToGrid(screenPosition);
 
-        int x = (int) gridPosition.x;
-        int y = (int) gridPosition.y;
-
-        return new Vector2Int(x, y);
+        return new Vector2Int(
+            Mathf.FloorToInt(position.x),
+            Mathf.FloorToInt(position.y)
+        );
     }
 
     public Rect ScreenToGrid(Rect screenRect)
@@ -151,24 +164,23 @@ public class MapView
 
     public RectInt ScreenToGridInt(Rect screenRect)
     {
-        Vector2 min = ScreenToGrid(screenRect.min);
-        Vector2 max = ScreenToGrid(screenRect.max);
+        Rect rect = ScreenToGrid(screenRect);
 
-        int xMin = (int) min.x;
-        int xMax = (int) max.x;
-
-        int yMin = (int) min.y;
-        int yMax = (int) max.y;
+        int xMin = Mathf.FloorToInt(rect.xMin);
+        int xMax = Mathf.CeilToInt (rect.xMax);
+        int yMin = Mathf.FloorToInt(rect.yMin);
+        int yMax = Mathf.CeilToInt (rect.yMax);
 
         return new RectInt(xMin, yMin, xMax - xMin, yMax - yMin);
     }
 
-    public Vector2 GridToScreen(Vector2     gridPosition) { return GridToScreen(gridPosition.x, gridPosition.y); }
-    public Vector2 GridToScreen(int   gridX, int   gridY) { return GridToScreen(gridX         , gridY         ); }
+    public Vector2 GridToScreen(Vector2 gridPosition)     { return GridToScreen(gridPosition.x, gridPosition.y); }
+    public Vector2 GridToScreen(int gridX, int gridY)     { return GridToScreen((float)gridX, (float)gridY); }
+
     public Vector2 GridToScreen(float gridX, float gridY)
     {
-        float x = ((gridX - Center.x) / VisibleWidth ) + 0.5f;
-        float y = ((gridY - Center.y) / VisibleHeight) + 0.5f;
+        float x = (gridX - Center.x) / VisibleWidth + 0.5f;
+        float y = (gridY - Center.y) / VisibleHeight + 0.5f;
 
         return new Vector2(x * Screen.width, y * Screen.height);
     }
@@ -180,36 +192,41 @@ public class MapView
 
         return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
     }
-    
+
     // IO
     public void Save(IOWriter writer)
     {
-        mapSize.Save        (writer       );
-        writer .WriteVector2(Center       );
-        writer .WriteFloat  (Zoom         );
+        mapSize.Save(writer);
+        writer.WriteVector2 (Center         );
+        writer.WriteFloat   (Zoom           );
 
-        writer.WriteFloat   (VisibleWidth );
-        writer.WriteFloat   (VisibleHeight);
+        // Retained for compatibility with existing save files.
+        writer.WriteFloat   (VisibleWidth   );
+        writer.WriteFloat   (VisibleHeight  );
 
-        writer.WriteInt     (XMin         );
-        writer.WriteInt     (XMax         );
-        writer.WriteInt     (YMin         );
-        writer.WriteInt     (YMax         );
+        writer.WriteInt     (XMin           );
+        writer.WriteInt     (XMax           );
+        writer.WriteInt     (YMin           );
+        writer.WriteInt     (YMax           );
     }
 
     public void Load(IOReader reader)
     {
-        mapSize       .Load(reader);
-        Center        = reader.ReadVector2();
-        Zoom          = reader.ReadFloat  ();
+        mapSize.Load(reader);
 
-        VisibleWidth  = reader.ReadFloat  ();
-        VisibleHeight = reader.ReadFloat  ();
+        Center = reader.ReadVector2();
+        Zoom  = Mathf.Clamp(reader.ReadFloat(), ZOOM_MIN, ZOOM_MAX);
 
-        XMin          = reader.ReadInt    ();
-        XMax          = reader.ReadInt    ();
-        YMin          = reader.ReadInt    ();
-        YMax          = reader.ReadInt    ();
+        // Read existing format, then rebuild derived values.
+        reader.ReadFloat();
+        reader.ReadFloat();
+
+        reader.ReadInt();
+        reader.ReadInt();
+        reader.ReadInt();
+        reader.ReadInt();
+
+        UpdateView();
     }
 
     // Debug
@@ -219,15 +236,15 @@ public class MapView
         indentation++;
 
         mapSize.Debug(indentation);
-        DebugFile.Log("Center:        " + Center       , indentation);
-        DebugFile.Log("Zoom:          " + Zoom         , indentation);
+        DebugFile.Log("Center:        " + Center        , indentation);
+        DebugFile.Log("Zoom:          " + Zoom          , indentation);
 
-        DebugFile.Log("VisibleWidth:  " + VisibleWidth , indentation);
-        DebugFile.Log("VisibleHeight: " + VisibleHeight, indentation);
+        DebugFile.Log("VisibleWidth:  " + VisibleWidth  , indentation);
+        DebugFile.Log("VisibleHeight: " + VisibleHeight , indentation);
 
-        DebugFile.Log("XMin:          " + XMin         , indentation);
-        DebugFile.Log("XMax:          " + XMax         , indentation);
-        DebugFile.Log("YMin:          " + YMin         , indentation);
-        DebugFile.Log("YMax:          " + YMax         , indentation);
+        DebugFile.Log("XMin:          " + XMin          , indentation);
+        DebugFile.Log("XMax:          " + XMax          , indentation);
+        DebugFile.Log("YMin:          " + YMin          , indentation);
+        DebugFile.Log("YMax:          " + YMax          , indentation);
     }
 }
