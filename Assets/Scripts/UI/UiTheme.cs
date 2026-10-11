@@ -34,7 +34,7 @@ public static class UiTheme
     private static List<Rect> blockersPrev = new List<Rect>();
     private static int        blockerFrame = -1;
 
-    private static void RegisterBlocker(Rect rect)
+    public static void RegisterBlocker(Rect rect)
     {
         if (Time.frameCount != blockerFrame)
         {

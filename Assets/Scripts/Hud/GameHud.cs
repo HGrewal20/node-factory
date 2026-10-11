@@ -16,6 +16,9 @@ public class GameHud : MonoBehaviour
     private GUIStyle statusCompleteStyle;
     private GUIStyle shopTitleStyle;
     private GUIStyle shopRowStyle;
+    private GUIStyle popupTitleStyle;
+    private GUIStyle popupBodyStyle;
+    private bool     completeDismissed = false;
     private float    stylesScale = -1f;
 
     private readonly RecipePicker recipePicker = new RecipePicker();
@@ -39,7 +42,8 @@ public class GameHud : MonoBehaviour
         if (shopOpen)
             DrawShopPanel(data);
 
-        recipePicker.Draw(); // last, so it sits on top of everything
+        recipePicker.Draw();
+        DrawCompletePopup(data); // last, so it sits on top of everything
     }
 
     private void HandleToggleKey()
@@ -68,6 +72,11 @@ public class GameHud : MonoBehaviour
         shopRowStyle        = UiTheme.MakeLabelStyle(UiTheme.Font(14), FontStyle.Normal, body, richText: true);
         shopRowStyle.alignment = TextAnchor.MiddleLeft;
         shopRowStyle.wordWrap  = false;
+
+        popupTitleStyle = UiTheme.MakeLabelStyle(UiTheme.Font(30), FontStyle.BoldAndItalic, new Color(0.45f, 1f, 0.55f));
+        popupTitleStyle.alignment = TextAnchor.UpperCenter;
+        popupBodyStyle  = UiTheme.MakeLabelStyle(UiTheme.Font(16), FontStyle.Normal, body, richText: true);
+        popupBodyStyle.alignment  = TextAnchor.UpperCenter;
     }
 
     // Top-right panel: resources you've delivered (this is your currency),
@@ -96,6 +105,61 @@ public class GameHud : MonoBehaviour
     private bool IsReallyComplete(GameData data)
     {
         return data.IsCompleted && data.Completion >= 1f;
+    }
+
+    // Shown once when the level's goal is reached: a dimmed screen with a
+    // centered panel. "Keep Playing" hides it, "Main Menu" ends the level.
+    private void DrawCompletePopup(GameData data)
+    {
+        if ( !IsReallyComplete(data) )
+        {
+            completeDismissed = false; // a new run can pop it up again
+            return;
+        }
+        if (completeDismissed)
+            return;
+
+        // Dim the whole screen and block clicks from reaching the map.
+        Rect screen = new Rect(0f, 0f, Screen.width, Screen.height);
+        GUI.color = new Color(0.01f, 0.03f, 0.05f, 0.55f);
+        GUI.DrawTexture(screen, Texture2D.whiteTexture);
+        GUI.color = Color.white;
+        UiTheme.RegisterBlocker(screen);
+
+        string title = "LEVEL COMPLETE";
+        string body  = data.Level.Name + "\n\n" +
+                       "Time: " + data.TimeElapsed.ToString("F1") + "s\n\n" +
+                       Header("GOAL") + "\n" + GoalToString();
+
+        float pad    = UiTheme.S(24f);
+        float gap    = UiTheme.S(12f);
+        float btnH   = UiTheme.S(42f);
+        float w      = Mathf.Min(Mathf.Clamp(Screen.width * 0.36f, UiTheme.S(380f), UiTheme.S(560f)), Screen.width * 0.9f);
+        float innerW = w - pad * 2f;
+        float titleH = popupTitleStyle.CalcHeight(new GUIContent(title), innerW);
+        float bodyH  = popupBodyStyle .CalcHeight(new GUIContent(body ), innerW);
+        float h      = pad + titleH + gap + bodyH + gap * 2f + btnH + pad;
+
+        Rect rect = new Rect((Screen.width - w) * 0.5f, (Screen.height - h) * 0.5f, w, h);
+        UiTheme.DrawPanel(rect);
+
+        float y = rect.y + pad;
+        GUI.Label(new Rect(rect.x + pad, y, innerW, titleH), title, popupTitleStyle);
+        y += titleH + gap;
+        GUI.Label(new Rect(rect.x + pad, y, innerW, bodyH), body, popupBodyStyle);
+        y += bodyH + gap * 2f;
+
+        float btnW = (innerW - gap) * 0.5f;
+
+        if ( UiTheme.Button(new Rect(rect.x + pad, y, btnW, btnH), "Keep Playing") )
+            completeDismissed = true;
+
+        if ( UiTheme.Button(new Rect(rect.x + pad + btnW + gap, y, btnW, btnH), "Main Menu") )
+        {
+            completeDismissed = false;
+            data.LevelStop();
+            GameMenu.SetPaused(false);
+        }
     }
 
     private string Header(string text)
