@@ -75,7 +75,7 @@ public class GameHud : MonoBehaviour
     private void DrawStatusPanel(GameData data)
     {
         string   text  = BuildStatusText(data);
-        GUIStyle style = data.IsCompleted ? statusCompleteStyle : statusBodyStyle;
+        GUIStyle style = IsReallyComplete(data) ? statusCompleteStyle : statusBodyStyle;
 
         float pad    = UiTheme.S(16f);
         float margin = UiTheme.S(10f);
@@ -90,6 +90,14 @@ public class GameHud : MonoBehaviour
         GUI.Label(new Rect(rect.x + pad, rect.y + pad * 0.5f, innerW, textH), text, style);
     }
 
+    // GameData.IsCompleted never gets reset when a new level starts (it's
+    // in Matthew's Game Data.cs), so after finishing once it stays true
+    // forever. Completion % does reset, so require both.
+    private bool IsReallyComplete(GameData data)
+    {
+        return data.IsCompleted && data.Completion >= 1f;
+    }
+
     private string Header(string text)
     {
         return "<color=#4DD9F2><b>" + text + "</b></color>";
@@ -102,7 +110,7 @@ public class GameHud : MonoBehaviour
         text += "\n" + Header("AVAILABLE MACHINES") + "\n" + AvailableMachinesToString(data);
         text += $"\nTime: {data.TimeElapsed:F1}s   Completion: {data.Completion * 100f:F0}%";
 
-        if (data.IsCompleted)
+        if ( IsReallyComplete(data) )
             text += "\n>>> LEVEL COMPLETE! <<<";
 
         return text;

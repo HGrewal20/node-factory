@@ -17,6 +17,7 @@ public static class UiTheme
     private static Texture2D buttonTexture;
     private static Texture2D glowTexture;
     private static GUIStyle  buttonStyle;
+    private static Texture2D buttonClear;
     private static float     buttonStyleScale = -1f;
     private static bool      built;
 
@@ -118,9 +119,7 @@ public static class UiTheme
         {
             buttonStyleScale = Scale;
 
-            Texture2D clear = new Texture2D(1, 1);
-            clear.SetPixel(0, 0, new Color(0f, 0f, 0f, 0f));
-            clear.Apply();
+            Texture2D clear = buttonClear;
 
             buttonStyle = new GUIStyle(GUI.skin.button);
             buttonStyle.fontSize  = Font(13);
@@ -144,9 +143,18 @@ public static class UiTheme
 
     private static void EnsureBuilt()
     {
-        if (built)
+        // Unity destroys textures created at runtime when play mode stops,
+        // but static fields survive when "Reload Domain" is turned off in
+        // the editor. So "built" alone isn't trustworthy: also check the
+        // textures are still alive (Unity makes a destroyed object == null).
+        if (built && panelTexture != null && buttonTexture != null && glowTexture != null && buttonClear != null)
             return;
-        built = true;
+        built       = true;
+        buttonStyle = null; // its background texture may be dead too
+
+        buttonClear = new Texture2D(1, 1);
+        buttonClear.SetPixel(0, 0, new Color(0f, 0f, 0f, 0f));
+        buttonClear.Apply();
 
         panelTexture  = MakeRoundedGradientTexture(128, 0.10f, 0.015f, 0.85f, 1.15f);
         buttonTexture = MakeRoundedGradientTexture( 64, 0.22f, 0.02f , 0.80f, 1.35f);
