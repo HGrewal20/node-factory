@@ -68,6 +68,29 @@ public class GameMenu : MonoBehaviour
     {
         new ChangelogVersion
         {
+            Version = "1.0.1",
+            Added = new string[]
+            {
+                "Level complete popup",
+                "Recipe picker: click a Miner or Smelter",
+                "Placement preview and hover outline",
+                "Level goal progress in the HUD",
+                "Menu, Shop, and Help buttons",
+                "Scrollable shop list",
+            },
+            Modified = new string[]
+            {
+                "HUD text and menus scale with the window size",
+                "Menus are bigger and use more of the screen",
+                "Quit now works inside the Unity editor",
+                "Clicking a panel no longer places a machine underneath",
+            },
+            Removed = new string[]
+            {
+            },
+        },
+        new ChangelogVersion
+        {
             Version = GameConstants.VERSION_TEXT,
             Added = new string[]
             {
@@ -76,21 +99,13 @@ public class GameMenu : MonoBehaviour
                 "Place, connect, and remove machines with the mouse",
                 "Pan (WASD/arrows) and zoom (scroll wheel)",
                 "HUD: resources, available machines, and progress",
-                "Shop for buying new machines (scrollable)",
-                "Level goal progress in the HUD",
-                "Placement preview and hover outline",
-                "Recipe picker: click a Miner/Smelter",
-                "Menu, Shop and Help buttons",
-                "Level complete popup",
+                "Shop for buying new machines",
             },
             Modified = new string[]
             {
                 "Machine and node visuals (colors, shapes)",
                 "Input handling, moved to the new Input System",
                 "Control hints and resource panel now match the menu's look",
-                "HUD text scales with the window size",
-                "Menus are bigger and scale with the window",
-                "Quit now works inside the Unity editor",
             },
             Removed = new string[]
             {
