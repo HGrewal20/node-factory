@@ -34,6 +34,7 @@ public class MachineWire : Machine
         Direction = direction;
     }
 
+    public bool IsDirectionNone (){ return (Direction == DIRECTION_NONE ); }
     public bool IsDirectionRight(){ return (Direction == DIRECTION_RIGHT); }
     public bool IsDirectionUp   (){ return (Direction == DIRECTION_UP   ); }
     public bool IsDirectionDown (){ return (Direction == DIRECTION_DOWN ); }

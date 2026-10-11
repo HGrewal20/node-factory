@@ -193,6 +193,12 @@ public class MapView
         return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
     }
 
+    // Visible Area
+    public RectInt VisibleArea()
+    {
+        return new RectInt(XMin, YMin, XMax - XMin + 1, YMax - YMin + 1);
+    }
+
     // IO
     public void Save(IOWriter writer)
     {

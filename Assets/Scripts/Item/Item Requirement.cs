@@ -11,8 +11,9 @@ public class ItemRequirement
     // Set
     public void Set(int amount, int required, Item item)
     {
-        if (amount   < 0) amount   = 0;
-        if (required < 0) required = 0;
+        if (amount   > required) amount   = required;
+        if (amount   < 0       ) amount   = 0;
+        if (required < 0       ) required = 0;
 
         Amount   = amount;
         Required = required;

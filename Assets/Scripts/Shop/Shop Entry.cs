@@ -2,7 +2,7 @@ public class ShopEntry
 {
     // Member Variables
     public readonly MachineType machineType;
-    public readonly ItemAmounts cost        = new ItemAmounts();
+    public readonly ItemAmounts cost        = new ItemAmounts();    // Warning Cannot Go Above 4 Entries
     
     // Constructor
     public ShopEntry(MachineType machineType)

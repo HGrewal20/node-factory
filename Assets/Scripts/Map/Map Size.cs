@@ -39,23 +39,17 @@ public class MapSize
         return value;
     }
 
-    // Clamp
-    public int ClampGridX(int value) => Mathf.Clamp(value, 0, Width  - 1);
-    public int ClampGridY(int value) => Mathf.Clamp(value, 0, Height - 1);
-
-    public Vector2Int ClampGrid(Vector2Int loc)
+    // Is Valid
+    public bool IsValid(int x, int y)
     {
-        return new Vector2Int( ClampGridX(loc.x), ClampGridY(loc.y) );
+        return (x >= 0) && (x < Width ) &&
+               (y >= 0) && (y < Height);
     }
 
-    public RectInt ClampGrid(RectInt rect)
+    public bool IsValid(RectInt rect)
     {
-        int xMin = Mathf.Clamp(rect.xMin, 0, Width );
-        int yMin = Mathf.Clamp(rect.yMin, 0, Height);
-        int xMax = Mathf.Clamp(rect.xMax, 0, Width );
-        int yMax = Mathf.Clamp(rect.yMax, 0, Height);
-
-        return new RectInt(xMin, yMin, xMax - xMin, yMax - yMin);
+        return IsValid(rect.xMin    , rect.yMin    ) &&
+               IsValid(rect.xMax - 1, rect.yMax - 1);
     }
 
     // IO

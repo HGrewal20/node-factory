@@ -1,66 +1,29 @@
 using UnityEngine;
 
-// Draws whatever is currently placed on the map, as flat colored boxes.
-// Kept deliberately simple per Matthew: solid pixels, no generated
-// textures/gradients/rounding. Play with the Color values below to
-// change how things look.
 public class GameDisplay : MonoBehaviour
 {
-    // ---- Colors. Tweak these freely. ----
-    private static readonly Color EMPTY_CELL_COLOR = new Color(0.45f, 0.75f, 0.45f); // green
+    private static readonly Color EMPTY_CELL_COLOR  = new Color(0.45f, 0.75f, 0.45f); // green
     private static readonly Color NODE_CONNECTED    = new Color(0.35f, 0.85f, 0.45f); // green
     private static readonly Color NODE_UNCONNECTED  = new Color(0.15f, 0.15f, 0.15f); // dark
 
-    // A single white pixel, stretched and tinted into whatever rect/color
-    // we need. This is the only "texture" this script uses.
-    private Texture2D pixel;
-
+    // A single white pixel, stretched and tinted into whatever rect/color we need. This is the only "texture" this script uses.
     private GameInteraction interaction;
     private GameHud         hud;
 
     void Awake()
     {
-        // GameEngine is the script that actually advances the simulation
-        // (ticks machines, timers, etc). Nothing was attaching it anywhere yet,
-        // so we add it here in code instead of needing a second manual step.
-        if ( GetComponent<GameEngine>() == null )
-            gameObject.AddComponent<GameEngine>();
-
-        // Same deal for the HUD (resources/shop/progress panel).
-        if ( GetComponent<GameHud>() == null )
-            gameObject.AddComponent<GameHud>();
-
         interaction = GetComponent<GameInteraction>();
-        hud         = GetComponent<GameHud>();
-    }
-
-    void Start()
-    {
-        // Level no longer auto-starts here. GameMenu's "Start Game" button
-        // calls GameData.INSTANCE.LevelStart(...) once you click it.
-        pixel = new Texture2D(1, 1);
-        pixel.SetPixel(0, 0, Color.white);
-        pixel.Apply();
+        hud         = GetComponent<GameHud        >();
     }
 
     void OnGUI()
     {
         GameData data = GameData.INSTANCE;
-        if ( !data.IsPlaying() || GameMenu.IsPaused )
+        if (!data.IsPlaying() || data.IsPaused || HudLevelCompleted.IsShowing)
             return;
 
-        MapView mapView = data.map.mapView;
-
-        // Which grid cells are currently visible on screen (min/max are inclusive).
-        RectInt visible = new RectInt(
-            mapView.XMin,
-            mapView.YMin,
-            mapView.XMax - mapView.XMin + 1,
-            mapView.YMax - mapView.YMin + 1
-        );
-
-        // Every machine touching that area, with no duplicates even though
-        // a big machine can occupy many cells.
+        MapView   mapView  = data.map.mapView;
+        RectInt   visible  = mapView.VisibleArea();
         Machine[] machines = data.map.mapMachines.GetArray(visible);
 
         DrawEmptyCells(mapView, visible, data.map.mapMachines);
@@ -71,15 +34,8 @@ public class GameDisplay : MonoBehaviour
             DrawNodes  (mapView, machine);
         }
 
-        DrawHoverAndPreview(data, mapView);
-
-        // Drawn last on purpose, so the hint text and HUD always end up
-        // on top of the grid instead of underneath it.
-        if (interaction != null)
-            interaction.DrawHint();
-
-        if (hud != null)
-            hud.DrawHud();
+        // if (hud != null)
+        //     hud.DrawHud();
     }
 
     // Draws every empty cell in view as a solid square, inset by 1 pixel
@@ -105,7 +61,7 @@ public class GameDisplay : MonoBehaviour
                 if (screenRect.width <= 0 || screenRect.height <= 0)
                     continue; // zoomed out too far for this to show up
 
-                GUI.DrawTexture(screenRect, pixel);
+                GUI.DrawTexture(screenRect, Texture2D.whiteTexture);
             }
         }
     }
@@ -117,7 +73,7 @@ public class GameDisplay : MonoBehaviour
         Rect screenRect = CellToScreen(mapView, gridRect.xMin, gridRect.yMin, gridRect.width, gridRect.height);
 
         GUI.color = ColorFor(machine);
-        GUI.DrawTexture(screenRect, pixel);
+        GUI.DrawTexture(screenRect, Texture2D.whiteTexture);
     }
 
     // Draws a small marker on every enabled node so you can see exactly
@@ -148,67 +104,8 @@ public class GameDisplay : MonoBehaviour
             screenRect.height -= insetY * 2f;
 
             GUI.color = node.IsConnected() ? NODE_CONNECTED : NODE_UNCONNECTED;
-            GUI.DrawTexture(screenRect, pixel);
+            GUI.DrawTexture(screenRect, Texture2D.whiteTexture);
         }
-    }
-
-    // Hovering a machine outlines it (Matthew's "overlay when mousing over
-    // a machine"). Hovering an empty cell shows a ghost of the selected
-    // machine's footprint: green if it can be placed, red if not.
-    private void DrawHoverAndPreview(GameData data, MapView mapView)
-    {
-        Vector2 mouse = Event.current.mousePosition;
-        if ( UiTheme.IsOverUi(mouse) )
-            return;
-
-        Vector2Int cell = mapView.ScreenToGridInt(mouse);
-        if (cell.x < 0 || cell.y < 0 || cell.x >= data.map.mapSize.Width || cell.y >= data.map.mapSize.Height)
-            return;
-
-        Machine hovered = data.map.mapMachines.Get(cell);
-        if (hovered != null)
-        {
-            RectInt r      = hovered.Rect;
-            Rect    screen = CellToScreen(mapView, r.xMin, r.yMin, r.width, r.height);
-            Color   accent = UiTheme.ACCENT_COLOR;
-
-            FillRect   (screen, new Color(accent.r, accent.g, accent.b, 0.18f));
-            OutlineRect(screen, accent, 2f);
-            return;
-        }
-
-        if (interaction == null)
-            return;
-
-        byte    type = interaction.SelectedType;
-        RectInt rect = new RectInt(cell, MachineConstructor.GetSize(type));
-
-        bool ok = GameInteraction.FitsInMap(data, rect)
-               && data.machinesAvailable.Amount(type) >= 1
-               && data.map.mapMachines.IsFree(rect);
-
-        Color c      = ok ? new Color(0.35f, 1f, 0.50f) : new Color(1f, 0.35f, 0.35f);
-        Rect  ghost  = CellToScreen(mapView, rect.xMin, rect.yMin, rect.width, rect.height);
-
-        FillRect   (ghost, new Color(c.r, c.g, c.b, 0.35f));
-        OutlineRect(ghost, c, 2f);
-    }
-
-    private void FillRect(Rect rect, Color color)
-    {
-        GUI.color = color;
-        GUI.DrawTexture(rect, pixel);
-        GUI.color = Color.white;
-    }
-
-    private void OutlineRect(Rect rect, Color color, float thickness)
-    {
-        GUI.color = color;
-        GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, thickness), pixel);
-        GUI.DrawTexture(new Rect(rect.x, rect.yMax - thickness, rect.width, thickness), pixel);
-        GUI.DrawTexture(new Rect(rect.x, rect.y, thickness, rect.height), pixel);
-        GUI.DrawTexture(new Rect(rect.xMax - thickness, rect.y, thickness, rect.height), pixel);
-        GUI.color = Color.white;
     }
 
     private Color ColorFor(Machine machine)

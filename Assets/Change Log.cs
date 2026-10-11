@@ -4,6 +4,20 @@ public class ChangeLog
     /*
     We can share changes here
 
+    October 10, 2026 - Matthew
+    - Fixed machine placement bug when pasting machines off the edge of the map
+    - Increased starting map size
+    - Small fixes I don't remember
+    - Fixed GameData IsCompleted not clearing and cleaned up the class
+    - Game was running much too fast. This should be fixed now.
+    - Updated GameEngine to give proper update timing
+    - Moved IsPaused into GameData and updated usage
+    - Game should now pause instead of running like before
+    - Simplified Paused Menu Exiting
+    - Fixed Quit not exiting when running via Unity
+    - Timing is fixed. Level runs slower. Game may need to be balanced again.
+    - Removed GameDisplay (Texture2D pixel) and replaced with built in Texture2D.whiteTexture
+
     October 9, 2026 - Matthew
     - Improved some collections so that the index is computed and no longer passed in
     - Changed limits on MapSize to allow smaller maps. Updated current levels based on that.

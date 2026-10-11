@@ -57,6 +57,13 @@ public class ItemAmounts
         return false;
     }
 
+    // Limit
+    public void Limit(int count)
+    {
+        if (entries.Count > count && count >= 0)
+            entries.RemoveRange(count, entries.Count - count);
+    }
+
     // Get
     public int Count()
     {

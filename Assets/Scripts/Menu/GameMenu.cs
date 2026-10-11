@@ -1,39 +1,7 @@
 using UnityEngine;
 
-// The main menu and pause menu.
-// Nothing starts the level on its own anymore - you have to press
-// "Start Game" here first (GameDisplay used to do that automatically,
-// that line got removed). Escape opens/closes the pause menu once a
-// level is running.
-//
-// Visual style: "dark aero" - a translucent glass sidebar anchored to
-// the left edge (scales with the window instead of a fixed pixel size),
-// a glowing cyan accent that gently pulses, and glossy top-lit buttons
-// with a hover accent bar. All generated procedurally in code, no image
-// files, same trick as the earlier machine-shading experiment.
 public class GameMenu : MonoBehaviour
 {
-    // GameDisplay and GameInteraction check this so they know to stop
-    // drawing/responding to clicks while the pause menu is open.
-    public static bool IsPaused { get; private set; }
-
-    // Lets other scripts (the HUD's Menu button) open/close the pause menu.
-    public static void SetPaused(bool paused)
-    {
-        IsPaused = paused;
-    }
-
-    // Application.Quit() does nothing inside the Unity editor (Matthew's
-    // Oct 6 note), so in the editor this stops play mode instead.
-    private static void QuitGame()
-    {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
-    }
-
     private static readonly Color ACCENT_COLOR = new Color(0.30f, 0.85f, 0.95f); // glowing cyan
     private static readonly Color PANEL_COLOR  = new Color(0.06f, 0.09f, 0.13f); // dark glass
     private static readonly Color BUTTON_COLOR = new Color(0.14f, 0.22f, 0.30f); // lighter glass
@@ -50,12 +18,9 @@ public class GameMenu : MonoBehaviour
     private GUIStyle  changelogEntryStyle;
     private Vector2   changelogScroll;
     private bool      built;
-    private float     builtScale = -1f;
 
-    // Player-facing changelog, organized like a real release note - not
-    // the full internal dev changelog (Assets/Change Log.cs, team notes).
-    // One entry per version; each lists what was Added / Modified /
-    // Removed from a player's point of view.
+    [SerializeField] private HudList hudList;
+
     private class ChangelogVersion
     {
         public string   Version;
@@ -66,29 +31,6 @@ public class GameMenu : MonoBehaviour
 
     private static readonly ChangelogVersion[] CHANGELOG = new ChangelogVersion[]
     {
-        new ChangelogVersion
-        {
-            Version = "1.0.1",
-            Added = new string[]
-            {
-                "Level complete popup",
-                "Recipe picker: click a Miner or Smelter",
-                "Placement preview and hover outline",
-                "Level goal progress in the HUD",
-                "Menu, Shop, and Help buttons",
-                "Scrollable shop list",
-            },
-            Modified = new string[]
-            {
-                "HUD text and menus scale with the window size",
-                "Menus are bigger and use more of the screen",
-                "Quit now works inside the Unity editor",
-                "Clicking a panel no longer places a machine underneath",
-            },
-            Removed = new string[]
-            {
-            },
-        },
         new ChangelogVersion
         {
             Version = GameConstants.VERSION_TEXT,
@@ -121,14 +63,14 @@ public class GameMenu : MonoBehaviour
 
         if ( !data.IsPlaying() )
         {
-            IsPaused = false; // no such thing as "paused" when not even playing
+            GameData.INSTANCE.Resume(); // no such thing as "paused" when not even playing
             DrawMainMenu(data);
             return;
         }
 
         HandleEscape();
 
-        if (IsPaused)
+        if ( GameData.INSTANCE.IsPaused )
             DrawPauseMenu(data);
     }
 
@@ -137,7 +79,10 @@ public class GameMenu : MonoBehaviour
         Event e = Event.current;
         if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Escape)
         {
-            IsPaused = !IsPaused;
+            GameData data = GameData.INSTANCE;
+            if (data.IsPaused)  data.Resume();
+            else                data.Pause ();
+
             e.Use();
         }
     }
@@ -146,19 +91,23 @@ public class GameMenu : MonoBehaviour
     {
         DrawDimBackground();
 
-        Rect box = LeftAnchoredBox(UiTheme.S(300f));
+        Rect box = LeftAnchoredBox(300f);
         DrawPanel(box);
 
         GUILayout.BeginArea(Inset(box));
-        GUILayout.Space(UiTheme.S(10f));
+        GUILayout.Space(10);
         GUILayout.Label("NODE FACTORY", titleStyle);
         GUILayout.Label("AUTOMATION  ·  v" + GameConstants.VERSION_TEXT, subtitleStyle);
-        GUILayout.Space(UiTheme.S(26f));
+        GUILayout.Space(26);
 
         if ( GlossyButton("Start Game") )
+        {
             data.LevelStart( LevelCollection.Get(0) );
+            GetComponent<GameHud>().ResetHud();
+            hudList.ResetHud();
+        }
 
-        GUILayout.Space(UiTheme.S(8f));
+        GUILayout.Space(8);
 
         if ( GlossyButton("Quit") )
             QuitGame();
@@ -172,30 +121,22 @@ public class GameMenu : MonoBehaviour
     {
         DrawDimBackground();
 
-        Rect box = LeftAnchoredBox(UiTheme.S(320f));
+        Rect box = LeftAnchoredBox(320f);
         DrawPanel(box);
 
         GUILayout.BeginArea(Inset(box));
-        GUILayout.Space(UiTheme.S(10f));
+        GUILayout.Space(10);
         GUILayout.Label("PAUSED", titleStyle);
         GUILayout.Label("GAME IS SUSPENDED", subtitleStyle);
-        GUILayout.Space(UiTheme.S(26f));
+        GUILayout.Space(26);
 
         if ( GlossyButton("Resume") )
-            IsPaused = false;
+            GameData.INSTANCE.Resume();
 
-        GUILayout.Space(UiTheme.S(8f));
+        GUILayout.Space(8);
 
-        if ( GlossyButton("Exit to Main Menu") )
-        {
+        if ( GlossyButton("Main Menu") )
             data.LevelStop();
-            IsPaused = false;
-        }
-
-        GUILayout.Space(UiTheme.S(8f));
-
-        if ( GlossyButton("Quit Game") )
-            QuitGame();
 
         GUILayout.EndArea();
     }
@@ -206,7 +147,7 @@ public class GameMenu : MonoBehaviour
     private Rect LeftAnchoredBox(float height)
     {
         float marginX = Mathf.Max(Screen.width  * 0.05f, 24f);
-        float width   = Mathf.Clamp(Screen.width * 0.28f, UiTheme.S(280f), UiTheme.S(480f));
+        float width   = Mathf.Clamp(Screen.width * 0.24f, 260f, 420f);
         float y       = (Screen.height - height) / 2f;
 
         return new Rect(marginX, y, width, height);
@@ -214,7 +155,7 @@ public class GameMenu : MonoBehaviour
 
     private Rect Inset(Rect box)
     {
-        return new Rect(box.x + UiTheme.S(18f), box.y, box.width - UiTheme.S(36f), box.height);
+        return new Rect(box.x + 18f, box.y, box.width - 36f, box.height);
     }
 
     // Mirrors LeftAnchoredBox, but anchored to the right edge instead -
@@ -222,9 +163,7 @@ public class GameMenu : MonoBehaviour
     private Rect RightAnchoredBox(float height, float leftBoxWidth)
     {
         float marginX = Mathf.Max(Screen.width  * 0.05f, 24f);
-        float width   = Mathf.Clamp(Screen.width * 0.30f, UiTheme.S(300f), UiTheme.S(520f));
-        // never overlap the left box on a narrow window
-        width = Mathf.Min(width, Mathf.Max(200f, Screen.width - marginX * 2f - leftBoxWidth - 20f));
+        float width   = Mathf.Clamp(Screen.width * 0.26f, 280f, 460f);
         float y       = (Screen.height - height) / 2f;
         float x       = Screen.width - marginX - width;
 
@@ -238,14 +177,14 @@ public class GameMenu : MonoBehaviour
     {
         // Own height, capped so it never runs off-screen - independent of
         // the start box, so a long changelog doesn't make that box taller.
-        float height = Mathf.Min(Screen.height * 0.80f, UiTheme.S(640f));
-        Rect  box    = RightAnchoredBox(height, LeftAnchoredBox(0f).width);
+        float height = Mathf.Min(Screen.height * 0.75f, 560f);
+        Rect  box    = RightAnchoredBox(height, 0f);
         DrawPanel(box);
 
         GUILayout.BeginArea(Inset(box));
-        GUILayout.Space(UiTheme.S(10f));
+        GUILayout.Space(10);
         GUILayout.Label("CHANGELOG", changelogHeaderStyle);
-        GUILayout.Space(UiTheme.S(12f));
+        GUILayout.Space(12);
 
         changelogScroll = GUILayout.BeginScrollView(
             changelogScroll, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
@@ -261,7 +200,7 @@ public class GameMenu : MonoBehaviour
     private void DrawChangelogVersion(ChangelogVersion version)
     {
         GUILayout.Label("v" + version.Version, changelogVersionStyle);
-        GUILayout.Space(UiTheme.S(6f));
+        GUILayout.Space(6);
 
         DrawChangelogSection("ADDED"   , version.Added   , "#5FD98A"); // green
         DrawChangelogSection("MODIFIED", version.Modified, "#F2C14D"); // amber
@@ -278,7 +217,7 @@ public class GameMenu : MonoBehaviour
         foreach (string entry in entries)
             GUILayout.Label("<color=" + bulletHex + ">•</color>  " + entry, changelogEntryStyle);
 
-        GUILayout.Space(UiTheme.S(8f));
+        GUILayout.Space(8);
     }
 
     // Darkens whatever's behind the menu (the grid/HUD). Slightly blue
@@ -315,7 +254,7 @@ public class GameMenu : MonoBehaviour
     // GUI.Button on top for the actual click + left-aligned label text.
     private bool GlossyButton(string label)
     {
-        Rect rect = GUILayoutUtility.GetRect(10f, UiTheme.S(38f), GUILayout.ExpandWidth(true));
+        Rect rect = GUILayoutUtility.GetRect(10f, 38f, GUILayout.ExpandWidth(true));
         bool hover = rect.Contains(Event.current.mousePosition);
 
         GUI.color = BUTTON_COLOR;
@@ -341,23 +280,22 @@ public class GameMenu : MonoBehaviour
     // ready for them yet), so build everything once on first use.
     private void EnsureBuilt()
     {
-        if (built && Mathf.Approximately(builtScale, UiTheme.Scale))
+        if (built)
             return;
-        built      = true;
-        builtScale = UiTheme.Scale;
+        built = true;
 
         panelTexture  = MakeRoundedGradientTexture(128, 0.10f, 0.015f, 0.85f, 1.15f);
         buttonTexture = MakeRoundedGradientTexture( 64, 0.22f, 0.02f , 0.80f, 1.35f);
         glowTexture   = MakeRoundedGradientTexture(128, 0.14f, 0.40f , 1f   , 1f   );
 
         titleStyle = new GUIStyle(GUI.skin.label);
-        titleStyle.fontSize   = UiTheme.Font(26);
+        titleStyle.fontSize   = 26;
         titleStyle.fontStyle  = FontStyle.BoldAndItalic;
         titleStyle.alignment  = TextAnchor.MiddleLeft;
         titleStyle.normal.textColor = Color.white;
 
         subtitleStyle = new GUIStyle(GUI.skin.label);
-        subtitleStyle.fontSize  = UiTheme.Font(12);
+        subtitleStyle.fontSize  = 12;
         subtitleStyle.fontStyle = FontStyle.Italic;
         subtitleStyle.alignment = TextAnchor.MiddleLeft;
         subtitleStyle.normal.textColor = new Color(0.65f, 0.80f, 0.85f);
@@ -367,10 +305,10 @@ public class GameMenu : MonoBehaviour
         clear.Apply();
 
         buttonStyle = new GUIStyle(GUI.skin.button);
-        buttonStyle.fontSize   = UiTheme.Font(15);
+        buttonStyle.fontSize   = 15;
         buttonStyle.fontStyle  = FontStyle.Bold;
         buttonStyle.alignment  = TextAnchor.MiddleLeft;
-        buttonStyle.padding.left = Mathf.RoundToInt(UiTheme.S(16f));
+        buttonStyle.padding.left = 16;
         buttonStyle.normal.background = clear;
         buttonStyle.hover .background = clear;
         buttonStyle.active.background = clear;
@@ -379,13 +317,13 @@ public class GameMenu : MonoBehaviour
         buttonStyle.active.textColor  = ACCENT_COLOR;
 
         changelogHeaderStyle = new GUIStyle(GUI.skin.label);
-        changelogHeaderStyle.fontSize   = UiTheme.Font(15);
+        changelogHeaderStyle.fontSize   = 15;
         changelogHeaderStyle.fontStyle  = FontStyle.Bold;
         changelogHeaderStyle.alignment  = TextAnchor.MiddleLeft;
         changelogHeaderStyle.normal.textColor = Color.white;
 
         changelogEntryStyle = new GUIStyle(GUI.skin.label);
-        changelogEntryStyle.fontSize   = UiTheme.Font(13);
+        changelogEntryStyle.fontSize   = 13;
         changelogEntryStyle.wordWrap   = true;
         changelogEntryStyle.richText   = true;
         changelogEntryStyle.alignment  = TextAnchor.UpperLeft;
@@ -393,14 +331,14 @@ public class GameMenu : MonoBehaviour
         changelogEntryStyle.normal.textColor = new Color(0.85f, 0.90f, 0.92f);
 
         changelogVersionStyle = new GUIStyle(GUI.skin.label);
-        changelogVersionStyle.fontSize   = UiTheme.Font(14);
+        changelogVersionStyle.fontSize   = 14;
         changelogVersionStyle.fontStyle  = FontStyle.Bold;
         changelogVersionStyle.alignment  = TextAnchor.MiddleLeft;
         changelogVersionStyle.margin.bottom = 4;
         changelogVersionStyle.normal.textColor = ACCENT_COLOR;
 
         changelogSectionStyle = new GUIStyle(GUI.skin.label);
-        changelogSectionStyle.fontSize   = UiTheme.Font(11);
+        changelogSectionStyle.fontSize   = 11;
         changelogSectionStyle.fontStyle  = FontStyle.Bold;
         changelogSectionStyle.alignment  = TextAnchor.MiddleLeft;
         changelogSectionStyle.margin.top    = 2;
@@ -455,5 +393,14 @@ public class GameMenu : MonoBehaviour
         float insideDist  = Mathf.Min(Mathf.Max(qx, qy), 0f);
 
         return outsideDist + insideDist - radius;
+    }
+
+    private void QuitGame()
+    {
+    #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+    #else
+        Application.Quit();
+    #endif
     }
 }

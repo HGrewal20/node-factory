@@ -94,7 +94,7 @@ public class MapMachines
         int x = position.x + dx;
         int y = position.y + dy;
 
-        while (IsValid(x, y))
+        while ( IsValid(x, y) )
         {
             Machine machine = machines[x, y];
             if (machine != null)

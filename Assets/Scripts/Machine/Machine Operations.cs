@@ -206,8 +206,8 @@ public static class MachineOperations
     }
 
     // Try Place Machine
-    public static Machine TryPlaceMachine(byte machineTypeIndex, Vector2Int pos)                            { return TryPlaceMachine( machineTypeIndex, pos, new Vector2Int(1, 1) ); }
-    public static Machine TryPlaceMachine(byte machineTypeIndex, Vector2Int pos, Vector2Int sizeOverwrite)
+    public  static Machine TryPlaceMachine(byte machineTypeIndex, Vector2Int pos)                            { return TryPlaceMachine( machineTypeIndex, pos, new Vector2Int(1, 1) ); }
+    private static Machine TryPlaceMachine(byte machineTypeIndex, Vector2Int pos, Vector2Int sizeOverwrite)
     {
         GameData data = GameData.INSTANCE;
 
@@ -217,10 +217,15 @@ public static class MachineOperations
         if (data.machinesAvailable.Amount(machineTypeIndex) < 1)
             return null;
 
-        // If No Space In Map -> Fail
+        // If Bounds Not Valid -> Fail
         RectInt rect = new RectInt(pos, size);
 
-        bool isFree = data.map.mapMachines.IsFree(rect);
+        bool  isValid = data.map.mapSize.IsValid(rect);
+        if ( !isValid )
+            return null;
+
+        // If No Space In Map -> Fail
+        bool  isFree = data.map.mapMachines.IsFree(rect);
         if ( !isFree )
             return null;
 

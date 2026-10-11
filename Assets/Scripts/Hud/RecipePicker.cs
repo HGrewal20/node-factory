@@ -26,7 +26,7 @@ public class RecipePicker
         GameData data = GameData.INSTANCE;
 
         // Close if the game stopped/paused or the machine was removed.
-        if ( !data.IsPlaying() || GameMenu.IsPaused || data.map.mapMachines.Get(target.Pos) != target )
+        if ( !data.IsPlaying() || data.IsPaused || data.map.mapMachines.Get(target.Pos) != target )
         {
             target = null;
             return;

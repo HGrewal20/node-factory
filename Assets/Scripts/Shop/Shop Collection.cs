@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 public static class ShopCollection
 {
+    // Constants
+    public const int MAX_SHOP_COST_ENTRIES = 4;
+
     // Collection
     private static readonly List<ShopEntry> ENTRIES = CreateEntries();
     public  static int Count()
@@ -12,7 +15,6 @@ public static class ShopCollection
     {
         return ENTRIES[index];
     }
-    // Debug
     public static void Debug(int indentation)
     {
         DebugFile.Log("ShopCollection", indentation);
@@ -47,6 +49,18 @@ public static class ShopCollection
         AddEntry(entries, MachineCollection.WIRE             ).cost.Add(ItemCollection.WAFER,  1);     // Wire
         AddEntry(entries, MachineCollection.PROCESSOR_MINER  ).cost.Add(ItemCollection.WAFER,  8);     // Processors
         AddEntry(entries, MachineCollection.PROCESSOR_SMELTER).cost.Add(ItemCollection.WAFER, 12).Add(ItemCollection.SILICON, 4);
+
+        // Safety Check
+        foreach (ShopEntry entry in entries)    // Matthew says: Michael please note. I limited cost to 4 types of items for display purposes. 
+        {
+            ItemAmounts cost = entry.cost;
+            if (cost.Count() > MAX_SHOP_COST_ENTRIES)
+            {
+                UnityEngine.Debug.Log("Error! Shop Entry has too many cost entries. Max allowed is 4. Removing Extras.");
+                cost.Limit(MAX_SHOP_COST_ENTRIES);
+            }
+        }
+
         return entries;
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public class GameData
 {
@@ -14,12 +15,13 @@ public class GameData
     public          float           TimeElapsed       { get; private set; }
     public          float           Completion        { get; private set; }
     public          bool            IsCompleted       { get; private set; }
+    public          bool            IsPaused          { get; private set; }
 
     // Constructor
     private GameData(){}
 
     // Clear
-    public void Clear()
+    private void Clear()
     {
         map              .Clear();
         machinesUsed     .Clear();
@@ -28,12 +30,14 @@ public class GameData
         Level            = null;
         TimeElapsed      = 0f;
         Completion       = 0f;
+        IsCompleted      = false;
+        IsPaused         = false;
     }
 
     // Game Tick
     public void GameTick()
     {
-        if (Level == null)
+        if (Level == null || IsPaused)
             return;
 
         map         .GameTick();
@@ -53,14 +57,17 @@ public class GameData
         if (Completion == 1f)
         {
             IsCompleted = true;
-            int todoNotifyLevelFinished;
+
+            HudLevelCompleted hud = UnityEngine.Object.FindAnyObjectByType<HudLevelCompleted>(FindObjectsInactive.Include);
+            if (hud != null)
+                hud.Show();
         }
     }
 
     // Level
     public void LevelStart(Level newLevel)
     {
-        LevelStop();
+        Clear();
 
         map              .Start(newLevel.mapSize         );
         machinesUsed     .Clear();
@@ -71,17 +78,23 @@ public class GameData
     }
     public void LevelStop()
     {
-        map              .Clear();
-        machinesUsed     .Clear();
-        machinesAvailable.Clear();
-        delivered        .Clear();
-        Level            = null;
-        TimeElapsed      = 0f;
-        Completion       = 0f;
+        Clear();
     }
     public bool IsPlaying()
     {
         return (Level != null);
+    }
+
+    // Pause & Resume
+    public void Pause()
+    {
+        if ( IsPlaying() )
+            IsPaused = true;
+    }
+
+    public void Resume()
+    {
+        IsPaused = false;
     }
 
     // Link
@@ -96,8 +109,27 @@ public class GameData
         links.Clear();
     }
 
-    // IO
-    public void Save(IOWriter writer)
+    // IO - Interface
+    public void Save()                      // Save Current Level
+    {
+        if (Level != null)
+            Save( GameSavePaths.GetLevelPath(Level.Index) );
+    }
+
+    public void Load(int levelIndex)        // Load the Level if it Exists, Otherwise Start a New One
+    {
+        string path = GameSavePaths.GetLevelPath(levelIndex);
+
+        if (GameSavePaths.Exists(levelIndex))   Load(path);
+        else                                    LevelStart(LevelCollection.Get((byte)levelIndex));
+    }
+
+    // IO - Paths
+    private void Save(string path) { using (IOWriterFile writer = new IOWriterFile(path)) Save(writer); }
+    private void Load(string path) { using (IOReaderFile reader = new IOReaderFile(path)) Load(reader); }
+
+    // IO - Workers
+    private void Save(IOWriter writer)
     {
         map              .Save(writer);
         machinesUsed     .Save(writer);
@@ -108,8 +140,11 @@ public class GameData
         writer           .WriteFloat(Completion );
         writer           .WriteBool (IsCompleted);
     }
-    public void Load(IOReader reader)
+
+    private void Load(IOReader reader)
     {
+        Clear();
+
         map              .Load(reader);
         machinesUsed     .Load(reader);
         machinesAvailable.Load(reader);
@@ -118,6 +153,7 @@ public class GameData
         TimeElapsed      = reader.ReadFloat();
         Completion       = reader.ReadFloat();
         IsCompleted      = reader.ReadBool ();
+        IsPaused         = false;
 
         Link(); // Final post processing
     }

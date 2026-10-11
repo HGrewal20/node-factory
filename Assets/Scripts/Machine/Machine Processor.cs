@@ -16,6 +16,7 @@ public class MachineProcessor : Machine
     {
         SetStandard( Height() );
         DisableAllNodes();
+        SetRecipeFirst ();
     }
 
     // Game Tick
@@ -82,6 +83,12 @@ public class MachineProcessor : Machine
         Recipe = GetRecipes().Get(index);
         inputs .SetAccepts(Recipe.inputs );
         outputs.SetAccepts(Recipe.outputs);
+    }
+    private void SetRecipeFirst()
+    {
+        Recipes recipes = GetRecipes();
+        if ( recipes != null && recipes.Count() > 0 )
+            SetRecipe(0);
     }
 
     public void ClearRecipe()
