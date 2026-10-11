@@ -27,6 +27,9 @@ public class GameInteraction : MonoBehaviour
 
     private byte selectedType = MachineCollection.PROCESSOR_MINER.Index;
 
+    // GameDisplay reads this to draw the placement preview.
+    public byte SelectedType { get { return selectedType; } }
+
     // Matthew built Scroll()/ZoomChange() into MapView already, nothing
     // was ever calling them though. These just control how fast WASD/
     // arrow keys pan and how much one scroll wheel notch zooms.
@@ -67,7 +70,7 @@ public class GameInteraction : MonoBehaviour
         Event e = Event.current;
 
         // Mouse scroll wheel zooms in/out.
-        if (e.type == EventType.ScrollWheel)
+        if (e.type == EventType.ScrollWheel && !UiTheme.IsOverUi(e.mousePosition))
         {
             data.map.mapView.ZoomChange(-e.delta.y * ZOOM_SPEED);
             e.Use();
@@ -82,7 +85,7 @@ public class GameInteraction : MonoBehaviour
         }
 
         // Mouse clicks place, connect, or remove.
-        if (e.type == EventType.MouseDown)
+        if (e.type == EventType.MouseDown && !UiTheme.IsOverUi(e.mousePosition))
         {
             Vector2Int gridPos = data.map.mapView.ScreenToGridInt(e.mousePosition);
 
@@ -94,6 +97,13 @@ public class GameInteraction : MonoBehaviour
 
             e.Use();
         }
+    }
+
+    public static bool FitsInMap(GameData data, RectInt rect)
+    {
+        return rect.xMin >= 0 && rect.yMin >= 0
+            && rect.xMax <= data.map.mapSize.Width
+            && rect.yMax <= data.map.mapSize.Height;
     }
 
     private bool InBounds(GameData data, Vector2Int gridPos)
@@ -109,14 +119,31 @@ public class GameInteraction : MonoBehaviour
         // Empty cell -> place the selected machine here.
         if (machine == null)
         {
-            MachineOperations.TryPlaceMachine(selectedType, gridPos);
+            // A big machine hanging past the map edge would make the
+            // engine's free-space check index outside its array, so only
+            // try when the whole footprint fits inside the map.
+            RectInt footprint = new RectInt(gridPos, MachineConstructor.GetSize(selectedType));
+            if ( FitsInMap(data, footprint) )
+                MachineOperations.TryPlaceMachine(selectedType, gridPos);
             return;
         }
 
         // Existing machine -> try to connect whichever node is under the click.
         MachineNode node = machine.GetNode(gridPos);
         if (node != null)
+        {
             MachineOperations.TryConnect(machine, node);
+            return;
+        }
+
+        // Body of a Miner/Smelter -> pick what it makes.
+        if (machine is MachineProcessor processor)
+        {
+            if (hud == null)
+                hud = GetComponent<GameHud>();
+            if (hud != null)
+                hud.OpenRecipePicker(processor);
+        }
     }
 
     private void RightClick(GameData data, Vector2Int gridPos)
@@ -131,50 +158,77 @@ public class GameInteraction : MonoBehaviour
     // to call each script's OnGUI in.
     private GUIStyle hintTitleStyle;
     private GUIStyle hintBodyStyle;
+    private float    hintStylesScale = -1f;
+    private bool     showHelp        = true;
+    private GameHud  hud;
 
     public void DrawHint()
     {
         EnsureHintStyles();
+        if (hud == null)
+            hud = GetComponent<GameHud>();
 
-        string name = MachineCollection.Get(selectedType).Name;
-
-        // Responsive: scales with the window instead of a fixed pixel
-        // size (same clamp pattern GameMenu uses for its own panels), so
-        // this doesn't overflow a small window or look tiny on a big one.
-        float w = Mathf.Clamp(Screen.width  * 0.32f, 320f, 470f);
-        float h = Mathf.Clamp(Screen.height * 0.30f, 175f, 215f);
-        Rect rect = new Rect(10, 10, w, h);
-
-        // Same glass panel + glow + accent bar as the main menu, instead
-        // of the old flat black box - this is purely visual, no behavior
-        // changed here.
-        UiTheme.DrawPanel(rect);
-
-        Rect inner = new Rect(rect.x + 16f, rect.y + 10f, rect.width - 32f, rect.height - 20f);
-
-        GUILayout.BeginArea(inner);
-        GUILayout.Label("Placing: " + name, hintTitleStyle);
-        GUILayout.Space(4);
-        GUILayout.Label(
+        string name  = MachineCollection.Get(selectedType).Name;
+        string title = "Placing: " + name;
+        string body  =
             "Left click empty cell: place it\n" +
             "Left click a machine's node: connect it\n" +
+            "Left click a Miner/Smelter: pick recipe\n" +
             "Right click a machine: remove it\n\n" +
             "1 Miner  2 Smelter  3 Delivery  4 Splitter\n" +
             "5 Merger  6 Flipper  7 Junction\n\n" +
             "WASD/arrows: pan   Scroll wheel: zoom\n" +
-            "B: open shop   Escape: pause",
-            hintBodyStyle
-        );
-        GUILayout.EndArea();
+            "B: shop   Escape: pause";
+
+        float pad    = UiTheme.S(16f);
+        float gap    = UiTheme.S(6f);
+        float margin = UiTheme.S(10f);
+        float btnH   = UiTheme.S(28f);
+        float btnW   = UiTheme.S(76f);
+        float w      = Mathf.Min(Mathf.Clamp(Screen.width * 0.34f, UiTheme.S(330f), UiTheme.S(520f)), Screen.width * 0.5f);
+        float innerW = w - pad * 2f;
+
+        float titleH = hintTitleStyle.CalcHeight(new GUIContent(title), innerW);
+        float bodyH  = showHelp ? hintBodyStyle.CalcHeight(new GUIContent(body), innerW) : 0f;
+        float h      = pad * 0.7f + btnH + gap + titleH + (showHelp ? gap + bodyH : 0f) + pad * 0.7f;
+
+        Rect rect = new Rect(margin, margin, w, h);
+        UiTheme.DrawPanel(rect);
+
+        // Button row: Menu (opens the pause menu), Shop, Help (hides the
+        // controls text when you don't need it).
+        float y = rect.y + pad * 0.7f;
+        float x = rect.x + pad;
+
+        if ( UiTheme.Button(new Rect(x, y, btnW, btnH), "Menu") )
+            GameMenu.SetPaused(true);
+        x += btnW + gap;
+
+        if ( UiTheme.Button(new Rect(x, y, btnW, btnH), "Shop") && hud != null )
+            hud.ToggleShop();
+        x += btnW + gap;
+
+        if ( UiTheme.Button(new Rect(x, y, btnW, btnH), showHelp ? "Hide" : "Help") )
+            showHelp = !showHelp;
+
+        y += btnH + gap;
+        GUI.Label(new Rect(rect.x + pad, y, innerW, titleH), title, hintTitleStyle);
+
+        if (showHelp)
+        {
+            y += titleH + gap;
+            GUI.Label(new Rect(rect.x + pad, y, innerW, bodyH), body, hintBodyStyle);
+        }
     }
 
     private void EnsureHintStyles()
     {
-        if (hintTitleStyle != null)
+        if (hintTitleStyle != null && Mathf.Approximately(hintStylesScale, UiTheme.Scale))
             return;
+        hintStylesScale = UiTheme.Scale;
 
-        hintTitleStyle = UiTheme.MakeLabelStyle(18, FontStyle.Bold, UiTheme.ACCENT_COLOR);
-        hintBodyStyle  = UiTheme.MakeLabelStyle(15, FontStyle.Normal, new Color(0.85f, 0.90f, 0.92f));
+        hintTitleStyle = UiTheme.MakeLabelStyle(UiTheme.Font(18), FontStyle.Bold  , UiTheme.ACCENT_COLOR);
+        hintBodyStyle  = UiTheme.MakeLabelStyle(UiTheme.Font(14), FontStyle.Normal, new Color(0.85f, 0.90f, 0.92f));
     }
 
     private int KeyToNumber(KeyCode key)

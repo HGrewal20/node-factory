@@ -71,6 +71,8 @@ public class GameDisplay : MonoBehaviour
             DrawNodes  (mapView, machine);
         }
 
+        DrawHoverAndPreview(data, mapView);
+
         // Drawn last on purpose, so the hint text and HUD always end up
         // on top of the grid instead of underneath it.
         if (interaction != null)
@@ -148,6 +150,65 @@ public class GameDisplay : MonoBehaviour
             GUI.color = node.IsConnected() ? NODE_CONNECTED : NODE_UNCONNECTED;
             GUI.DrawTexture(screenRect, pixel);
         }
+    }
+
+    // Hovering a machine outlines it (Matthew's "overlay when mousing over
+    // a machine"). Hovering an empty cell shows a ghost of the selected
+    // machine's footprint: green if it can be placed, red if not.
+    private void DrawHoverAndPreview(GameData data, MapView mapView)
+    {
+        Vector2 mouse = Event.current.mousePosition;
+        if ( UiTheme.IsOverUi(mouse) )
+            return;
+
+        Vector2Int cell = mapView.ScreenToGridInt(mouse);
+        if (cell.x < 0 || cell.y < 0 || cell.x >= data.map.mapSize.Width || cell.y >= data.map.mapSize.Height)
+            return;
+
+        Machine hovered = data.map.mapMachines.Get(cell);
+        if (hovered != null)
+        {
+            RectInt r      = hovered.Rect;
+            Rect    screen = CellToScreen(mapView, r.xMin, r.yMin, r.width, r.height);
+            Color   accent = UiTheme.ACCENT_COLOR;
+
+            FillRect   (screen, new Color(accent.r, accent.g, accent.b, 0.18f));
+            OutlineRect(screen, accent, 2f);
+            return;
+        }
+
+        if (interaction == null)
+            return;
+
+        byte    type = interaction.SelectedType;
+        RectInt rect = new RectInt(cell, MachineConstructor.GetSize(type));
+
+        bool ok = GameInteraction.FitsInMap(data, rect)
+               && data.machinesAvailable.Amount(type) >= 1
+               && data.map.mapMachines.IsFree(rect);
+
+        Color c      = ok ? new Color(0.35f, 1f, 0.50f) : new Color(1f, 0.35f, 0.35f);
+        Rect  ghost  = CellToScreen(mapView, rect.xMin, rect.yMin, rect.width, rect.height);
+
+        FillRect   (ghost, new Color(c.r, c.g, c.b, 0.35f));
+        OutlineRect(ghost, c, 2f);
+    }
+
+    private void FillRect(Rect rect, Color color)
+    {
+        GUI.color = color;
+        GUI.DrawTexture(rect, pixel);
+        GUI.color = Color.white;
+    }
+
+    private void OutlineRect(Rect rect, Color color, float thickness)
+    {
+        GUI.color = color;
+        GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, thickness), pixel);
+        GUI.DrawTexture(new Rect(rect.x, rect.yMax - thickness, rect.width, thickness), pixel);
+        GUI.DrawTexture(new Rect(rect.x, rect.y, thickness, rect.height), pixel);
+        GUI.DrawTexture(new Rect(rect.xMax - thickness, rect.y, thickness, rect.height), pixel);
+        GUI.color = Color.white;
     }
 
     private Color ColorFor(Machine machine)

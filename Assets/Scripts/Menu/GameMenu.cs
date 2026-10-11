@@ -17,6 +17,23 @@ public class GameMenu : MonoBehaviour
     // drawing/responding to clicks while the pause menu is open.
     public static bool IsPaused { get; private set; }
 
+    // Lets other scripts (the HUD's Menu button) open/close the pause menu.
+    public static void SetPaused(bool paused)
+    {
+        IsPaused = paused;
+    }
+
+    // Application.Quit() does nothing inside the Unity editor (Matthew's
+    // Oct 6 note), so in the editor this stops play mode instead.
+    private static void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
     private static readonly Color ACCENT_COLOR = new Color(0.30f, 0.85f, 0.95f); // glowing cyan
     private static readonly Color PANEL_COLOR  = new Color(0.06f, 0.09f, 0.13f); // dark glass
     private static readonly Color BUTTON_COLOR = new Color(0.14f, 0.22f, 0.30f); // lighter glass
@@ -58,13 +75,19 @@ public class GameMenu : MonoBehaviour
                 "Place, connect, and remove machines with the mouse",
                 "Pan (WASD/arrows) and zoom (scroll wheel)",
                 "HUD: resources, available machines, and progress",
-                "Shop for buying new machines",
+                "Shop for buying new machines (scrollable)",
+                "Level goal progress in the HUD",
+                "Placement preview and hover outline",
+                "Recipe picker: click a Miner/Smelter",
+                "Menu, Shop and Help buttons",
             },
             Modified = new string[]
             {
                 "Machine and node visuals (colors, shapes)",
                 "Input handling, moved to the new Input System",
                 "Control hints and resource panel now match the menu's look",
+                "HUD text scales with the window size",
+                "Quit now works inside the Unity editor",
             },
             Removed = new string[]
             {
@@ -120,7 +143,7 @@ public class GameMenu : MonoBehaviour
         GUILayout.Space(8);
 
         if ( GlossyButton("Quit") )
-            Application.Quit();
+            QuitGame();
 
         GUILayout.EndArea();
 
@@ -154,7 +177,7 @@ public class GameMenu : MonoBehaviour
         GUILayout.Space(8);
 
         if ( GlossyButton("Quit Game") )
-            Application.Quit();
+            QuitGame();
 
         GUILayout.EndArea();
     }

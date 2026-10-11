@@ -1,33 +1,45 @@
 using UnityEngine;
 
-// The in-game HUD: shows your current resources, which machines you have
-// available to place, the shop (buy new machines using delivered
-// resources), and basic level progress (time elapsed, completion %).
+// The in-game HUD: shows your current resources, the level goal, which
+// machines you have available to place, the shop (buy new machines using
+// delivered resources), and basic level progress (time, completion %).
 //
-// Press B to toggle the shop panel open/closed. The status panel (top
-// right) is always visible while playing.
-//
-// This is meant to replace Michael's DebugHudOverlay.cs - he said in that
-// file's own comment it's fine to delete once a real HUD exists.
+// Press B (or the Shop button) to toggle the shop. The status panel (top
+// right) is always visible while playing. Everything scales with the
+// window height through UiTheme so the text stays readable.
 public class GameHud : MonoBehaviour
 {
-    private bool shopOpen = false;
+    private bool    shopOpen = false;
+    private Vector2 shopScroll;
+
+    private GUIStyle statusBodyStyle;
+    private GUIStyle statusCompleteStyle;
+    private GUIStyle shopTitleStyle;
+    private GUIStyle shopRowStyle;
+    private float    stylesScale = -1f;
+
+    private readonly RecipePicker recipePicker = new RecipePicker();
+
+    public void ToggleShop() { shopOpen = !shopOpen; }
+    public void OpenRecipePicker(MachineProcessor processor) { recipePicker.Open(processor); }
 
     // Called by GameDisplay, after everything else it draws, so this
     // always ends up on top instead of racing with it for draw order
-    // (same fix as GameInteraction.DrawHint - Unity doesn't guarantee
-    // which component's OnGUI runs first).
+    // (Unity doesn't guarantee which component's OnGUI runs first).
     public void DrawHud()
     {
         GameData data = GameData.INSTANCE;
         if ( !data.IsPlaying() || GameMenu.IsPaused )
             return;
 
+        EnsureStyles();
         HandleToggleKey();
         DrawStatusPanel(data);
 
         if (shopOpen)
             DrawShopPanel(data);
+
+        recipePicker.Draw(); // last, so it sits on top of everything
     }
 
     private void HandleToggleKey()
@@ -40,53 +52,79 @@ public class GameHud : MonoBehaviour
         }
     }
 
-    private GUIStyle statusBodyStyle;
-    private GUIStyle statusCompleteStyle;
-
-    // Top-right panel: resources you've delivered (this is your currency),
-    // machines you own but haven't placed yet, and level progress. Same
-    // glass-panel look as the main menu / control hints now, instead of
-    // the old flat black box.
-    private void DrawStatusPanel(GameData data)
+    // Styles depend on the window height (text scales), so rebuild them
+    // whenever the scale changes, e.g. after resizing the Game view.
+    private void EnsureStyles()
     {
-        EnsureStatusStyles();
+        if (statusBodyStyle != null && Mathf.Approximately(stylesScale, UiTheme.Scale))
+            return;
+        stylesScale = UiTheme.Scale;
 
-        string text = BuildStatusText(data);
+        Color body = new Color(0.85f, 0.90f, 0.92f);
 
-        // Responsive: same clamp pattern as the hint panel / GameMenu's
-        // own panels, so it scales with the window instead of a fixed
-        // pixel width.
-        float w = Mathf.Clamp(Screen.width * 0.28f, 260f, 320f);
-        float h = 34f + (CountLines(text) * 18f);
-        Rect rect = new Rect(Screen.width - w - 10f, 10f, w, h);
-
-        UiTheme.DrawPanel(rect);
-
-        Rect inner = new Rect(rect.x + 16f, rect.y + 8f, rect.width - 32f, rect.height - 16f);
-        GUIStyle style = data.IsCompleted ? statusCompleteStyle : statusBodyStyle;
-        GUI.Label(inner, text, style);
+        statusBodyStyle     = UiTheme.MakeLabelStyle(UiTheme.Font(14), FontStyle.Normal, body, richText: true);
+        statusCompleteStyle = UiTheme.MakeLabelStyle(UiTheme.Font(14), FontStyle.Normal, new Color(0.45f, 1f, 0.55f), richText: true);
+        shopTitleStyle      = UiTheme.MakeLabelStyle(UiTheme.Font(15), FontStyle.Bold  , body, richText: true);
+        shopRowStyle        = UiTheme.MakeLabelStyle(UiTheme.Font(14), FontStyle.Normal, body, richText: true);
+        shopRowStyle.alignment = TextAnchor.MiddleLeft;
+        shopRowStyle.wordWrap  = false;
     }
 
-    private void EnsureStatusStyles()
+    // Top-right panel: resources you've delivered (this is your currency),
+    // the level goal, machines you own but haven't placed yet, and progress.
+    private void DrawStatusPanel(GameData data)
     {
-        if (statusBodyStyle != null)
-            return;
+        string   text  = BuildStatusText(data);
+        GUIStyle style = data.IsCompleted ? statusCompleteStyle : statusBodyStyle;
 
-        statusBodyStyle     = UiTheme.MakeLabelStyle(13, FontStyle.Normal, new Color(0.85f, 0.90f, 0.92f), richText: true);
-        statusCompleteStyle = UiTheme.MakeLabelStyle(13, FontStyle.Normal, new Color(0.45f, 1f, 0.55f)    , richText: true);
+        float pad    = UiTheme.S(16f);
+        float margin = UiTheme.S(10f);
+        float w      = Mathf.Min(Mathf.Clamp(Screen.width * 0.26f, UiTheme.S(260f), UiTheme.S(380f)), Screen.width * 0.45f);
+        float innerW = w - pad * 2f;
+        float textH  = style.CalcHeight(new GUIContent(text), innerW);
+        float h      = textH + pad;
+
+        Rect rect = new Rect(Screen.width - w - margin, margin, w, h);
+        UiTheme.DrawPanel(rect);
+
+        GUI.Label(new Rect(rect.x + pad, rect.y + pad * 0.5f, innerW, textH), text, style);
+    }
+
+    private string Header(string text)
+    {
+        return "<color=#4DD9F2><b>" + text + "</b></color>";
     }
 
     private string BuildStatusText(GameData data)
     {
-        string text = "<color=#4DD9F2><b>RESOURCES</b></color>\n" + ItemAmountsToString(data.delivered);
-        text += "\n<color=#4DD9F2><b>AVAILABLE MACHINES</b></color>\n" + AvailableMachinesToString(data);
+        string text = Header("RESOURCES") + "\n" + ItemAmountsToString(data.delivered);
+        text += "\n" + Header("GOAL") + "\n" + GoalToString();
+        text += "\n" + Header("AVAILABLE MACHINES") + "\n" + AvailableMachinesToString(data);
         text += $"\nTime: {data.TimeElapsed:F1}s   Completion: {data.Completion * 100f:F0}%";
-        text += "\n\nPress B for shop";
 
         if (data.IsCompleted)
             text += "\n>>> LEVEL COMPLETE! <<<";
 
         return text;
+    }
+
+    // "Silicon: 3 / 10" for every item the level wants delivered, green
+    // once that item's target is reached.
+    private string GoalToString()
+    {
+        ItemRequirements requirements = ItemRequirements.INSTANCE;
+        int count = requirements.Count();
+        if (count == 0)
+            return "  (none)";
+
+        string text = "";
+        for (int i = 0; i < count; i++)
+        {
+            ItemRequirement r     = requirements.Get(i);
+            string          color = r.IsMet() ? "#5FD98A" : "#FFFFFF";
+            text += $"  {r.Item.Name}: <color={color}>{r.Amount} / {r.Required}</color>\n";
+        }
+        return text.TrimEnd('\n');
     }
 
     private string ItemAmountsToString(ItemAmounts amounts)
@@ -119,53 +157,59 @@ public class GameHud : MonoBehaviour
             text += $"  {MachineCollection.Get(i).Name}: {amount}\n";
         }
 
-        return any ? text.TrimEnd('\n') : "  (none, buy some below)";
-    }
-
-    private int CountLines(string text)
-    {
-        int count = 1;
-        foreach (char c in text)
-            if (c == '\n')
-                count++;
-        return count;
+        return any ? text.TrimEnd('\n') : "  (none, buy some in the shop)";
     }
 
     // Bottom-left panel: every ShopCollection entry, with its cost and a
-    // Buy button. Spending directly manipulates GameData (delivered,
-    // machinesAvailable) - both are public, no need to touch Matthew's
-    // Machine Operations.cs for this.
+    // Buy button, in a scrollable list. Spending directly manipulates
+    // GameData (delivered, machinesAvailable) - both are public, no need
+    // to touch Matthew's Machine Operations.cs for this.
     private void DrawShopPanel(GameData data)
     {
         int   entryCount = ShopCollection.Count();
-        float w          = 320f;
-        float rowH       = 26f;
-        float h          = 40f + (entryCount * rowH);
-        Rect  rect       = new Rect(10f, Screen.height - h - 10f, w, h);
+        float pad        = UiTheme.S(14f);
+        float margin     = UiTheme.S(10f);
+        float rowH       = UiTheme.S(34f);
+        float titleH     = UiTheme.S(30f);
+        float w          = Mathf.Min(Mathf.Clamp(Screen.width * 0.32f, UiTheme.S(320f), UiTheme.S(480f)), Screen.width * 0.6f);
 
-        GUI.color = new Color(0f, 0f, 0f, 0.75f);
-        GUI.DrawTexture(rect, Texture2D.whiteTexture);
+        float fullListH  = entryCount * rowH;
+        float listH      = Mathf.Min(fullListH, Screen.height * 0.4f);
+        bool  scrolls    = fullListH > listH;
+        float h          = pad + titleH + listH + pad;
 
-        GUI.color = Color.white;
-        GUI.Label(new Rect(rect.x + 8f, rect.y + 4f, rect.width - 16f, 20f), "SHOP (B to close)");
+        Rect rect = new Rect(margin, Screen.height - h - margin, w, h);
+        UiTheme.DrawPanel(rect);
+
+        GUI.Label(new Rect(rect.x + pad, rect.y + pad * 0.7f, w - pad * 2f, titleH),
+                  Header("SHOP") + "   (B to close)", shopTitleStyle);
+
+        Rect view    = new Rect(rect.x + pad * 0.6f, rect.y + pad * 0.7f + titleH, w - pad * 1.2f, listH);
+        Rect content = new Rect(0f, 0f, view.width - (scrolls ? UiTheme.S(18f) : 0f), fullListH);
+
+        shopScroll = GUI.BeginScrollView(view, shopScroll, content);
+
+        float buttonW = UiTheme.S(64f);
 
         for (byte i = 0; i < entryCount; i++)
         {
             ShopEntry entry = ShopCollection.Get(i);
-            float     y     = rect.y + 28f + (i * rowH);
+            float     y     = i * rowH;
 
             string label = entry.machineType.Name + " - " + CostToString(entry.cost);
-            GUI.Label(new Rect(rect.x + 8f, y, 220f, rowH), label);
+            GUI.Label(new Rect(UiTheme.S(6f), y, content.width - buttonW - UiTheme.S(14f), rowH), label, shopRowStyle);
 
             bool canAfford = data.delivered.IsMet(entry.cost);
-            GUI.enabled = canAfford;
-            if ( GUI.Button(new Rect(rect.x + rect.width - 70f, y, 60f, 22f), "Buy") )
+            Rect buy       = new Rect(content.width - buttonW - UiTheme.S(4f), y + UiTheme.S(4f), buttonW, rowH - UiTheme.S(8f));
+
+            if ( UiTheme.Button(buy, "Buy", canAfford) )
             {
                 data.delivered.TrySubtract(entry.cost);
                 data.machinesAvailable.Modify(entry.machineType, 1);
             }
-            GUI.enabled = true;
         }
+
+        GUI.EndScrollView();
     }
 
     private string CostToString(ItemAmounts cost)

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 // Shared "dark aero" look - the same translucent glass panel, pulsing
@@ -10,9 +11,47 @@ public static class UiTheme
     public static readonly Color ACCENT_COLOR = new Color(0.30f, 0.85f, 0.95f); // glowing cyan
     public static readonly Color PANEL_COLOR  = new Color(0.06f, 0.09f, 0.13f); // dark glass
 
+    public static readonly Color BUTTON_COLOR = new Color(0.14f, 0.22f, 0.30f); // lighter glass
+
     private static Texture2D panelTexture;
+    private static Texture2D buttonTexture;
     private static Texture2D glowTexture;
+    private static GUIStyle  buttonStyle;
+    private static float     buttonStyleScale = -1f;
     private static bool      built;
+
+    // Everything is sized for a 720px-tall window and grows with the
+    // window height from there (Matthew's note: the text was way too small).
+    public static float Scale          { get { return Mathf.Clamp(Screen.height / 720f, 1f, 2.2f); } }
+    public static float S(float pixels) { return pixels * Scale; }
+    public static int   Font(int size)  { return Mathf.RoundToInt(size * Scale); }
+
+    // Panels register their rectangles here so mouse clicks on a panel
+    // don't also place a machine on the grid underneath it. Two lists
+    // (this frame + last frame) so it works whichever OnGUI runs first.
+    private static List<Rect> blockersNow  = new List<Rect>();
+    private static List<Rect> blockersPrev = new List<Rect>();
+    private static int        blockerFrame = -1;
+
+    private static void RegisterBlocker(Rect rect)
+    {
+        if (Time.frameCount != blockerFrame)
+        {
+            List<Rect> swap = blockersPrev;
+            blockersPrev = blockersNow;
+            blockersNow  = swap;
+            blockersNow.Clear();
+            blockerFrame = Time.frameCount;
+        }
+        blockersNow.Add(rect);
+    }
+
+    public static bool IsOverUi(Vector2 guiPosition)
+    {
+        foreach (Rect r in blockersNow)  if (r.Contains(guiPosition)) return true;
+        foreach (Rect r in blockersPrev) if (r.Contains(guiPosition)) return true;
+        return false;
+    }
 
     // Glass panel + soft pulsing glow + left accent bar. Call only from
     // inside OnGUI (its textures are built lazily on first use, same as
@@ -20,6 +59,7 @@ public static class UiTheme
     public static void DrawPanel(Rect box)
     {
         EnsureBuilt();
+        RegisterBlocker(box);
 
         float pulse = Mathf.Lerp(0.18f, 0.38f, (Mathf.Sin(Time.time * 1.4f) + 1f) * 0.5f);
 
@@ -50,14 +90,67 @@ public static class UiTheme
         return style;
     }
 
+    // Small glossy button in the same style as the menu's buttons.
+    // Returns true on the frame it's clicked. enabled=false draws it
+    // dimmed and never returns true (used for "can't afford" in the shop).
+    public static bool Button(Rect rect, string label, bool enabled = true)
+    {
+        EnsureBuilt();
+
+        bool hover = enabled && rect.Contains(Event.current.mousePosition);
+
+        GUI.color = enabled ? BUTTON_COLOR : new Color(BUTTON_COLOR.r, BUTTON_COLOR.g, BUTTON_COLOR.b, 0.45f);
+        GUI.DrawTexture(rect, buttonTexture);
+
+        Rect highlight = new Rect(rect.x + 2f, rect.y + 1f, rect.width - 4f, rect.height * 0.45f);
+        GUI.color = new Color(1f, 1f, 1f, enabled ? 0.14f : 0.05f);
+        GUI.DrawTexture(highlight, buttonTexture);
+
+        if (hover)
+        {
+            GUI.color = ACCENT_COLOR;
+            GUI.DrawTexture(new Rect(rect.x, rect.y + 2f, 3f, rect.height - 4f), Texture2D.whiteTexture);
+        }
+
+        GUI.color = Color.white;
+
+        if (buttonStyle == null || !Mathf.Approximately(buttonStyleScale, Scale))
+        {
+            buttonStyleScale = Scale;
+
+            Texture2D clear = new Texture2D(1, 1);
+            clear.SetPixel(0, 0, new Color(0f, 0f, 0f, 0f));
+            clear.Apply();
+
+            buttonStyle = new GUIStyle(GUI.skin.button);
+            buttonStyle.fontSize  = Font(13);
+            buttonStyle.fontStyle = FontStyle.Bold;
+            buttonStyle.alignment = TextAnchor.MiddleCenter;
+            buttonStyle.normal.background = clear;
+            buttonStyle.hover .background = clear;
+            buttonStyle.active.background = clear;
+            buttonStyle.normal.textColor  = Color.white;
+            buttonStyle.hover .textColor  = ACCENT_COLOR;
+            buttonStyle.active.textColor  = ACCENT_COLOR;
+        }
+
+        bool wasEnabled = GUI.enabled;
+        GUI.enabled = enabled;
+        bool clicked = GUI.Button(rect, label, buttonStyle);
+        GUI.enabled = wasEnabled;
+
+        return clicked && enabled;
+    }
+
     private static void EnsureBuilt()
     {
         if (built)
             return;
         built = true;
 
-        panelTexture = MakeRoundedGradientTexture(128, 0.10f, 0.015f, 0.85f, 1.15f);
-        glowTexture  = MakeRoundedGradientTexture(128, 0.14f, 0.40f , 1f   , 1f   );
+        panelTexture  = MakeRoundedGradientTexture(128, 0.10f, 0.015f, 0.85f, 1.15f);
+        buttonTexture = MakeRoundedGradientTexture( 64, 0.22f, 0.02f , 0.80f, 1.35f);
+        glowTexture   = MakeRoundedGradientTexture(128, 0.14f, 0.40f , 1f   , 1f   );
     }
 
     // Same rounded-rect-with-brightness-gradient generator as GameMenu's
