@@ -4,13 +4,16 @@ using UnityEngine.UI;
 
 public class HudLevelCompleted : MonoBehaviour
 {
-    [SerializeField] private GameObject panel;
-    [SerializeField] private TMP_Text   textLevel;
-    [SerializeField] private TMP_Text   textTime;
-    [SerializeField] private Button     buttonContinue;
-    [SerializeField] private Button     buttonNext;
-    [SerializeField] private Button     buttonQuit;
-    [SerializeField] private HudList    hudList;
+    // Member Variables
+    [SerializeField] private GameObject     panel;
+    [SerializeField] private TMP_Text       textLevel;
+    [SerializeField] private TMP_Text       textTime;
+    [SerializeField] private Button         buttonContinue;
+    [SerializeField] private Button         buttonNext;
+    [SerializeField] private Button         buttonQuit;
+    [SerializeField] private MenuController menuController;
+
+    public static bool IsShowing { get; private set; }
 
     private void Awake()
     {
@@ -19,6 +22,7 @@ public class HudLevelCompleted : MonoBehaviour
         buttonQuit    .onClick.AddListener(Quit    );
 
         panel.SetActive(false);
+        IsShowing = false;
     }
 
     public void Show()
@@ -28,17 +32,16 @@ public class HudLevelCompleted : MonoBehaviour
         textLevel.text = "Level " + (data.Level.Index + 1);
         textTime .text = HudTools.FormatTime(data.TimeElapsed);
 
+        int nextIndex = data.Level.Index + 1;
+        buttonNext.gameObject.SetActive(nextIndex < LevelCollection.Count());
+
         IsShowing = true;
         panel.SetActive(true);
-
-        int nextIndex = data.Level.Index + 1;
-        buttonNext.gameObject.SetActive( nextIndex < LevelCollection.Count() );
     }
 
     private void Continue()
     {
-        IsShowing = false;
-        panel.SetActive(false);
+        Hide();
     }
 
     private void Next()
@@ -46,27 +49,24 @@ public class HudLevelCompleted : MonoBehaviour
         GameData data = GameData.INSTANCE;
 
         int nextIndex = data.Level.Index + 1;
-
         if (nextIndex >= LevelCollection.Count())
             return;
 
-        IsShowing = false;
-        panel.SetActive(false);
-
-        data.LevelStart(LevelCollection.Get((byte)nextIndex));
-
-        // Reset the new HUD for the next level.
-        hudList.ResetHud();
+        Hide();
+        menuController.StartLevel( LevelCollection.Get((byte)nextIndex) );
     }
 
     private void Quit()
     {
-        IsShowing = false;
-        panel.SetActive(false);
-        GameData.INSTANCE.LevelStop();
+        Hide();
+        menuController.ExitLevel();
     }
 
-    public static bool IsShowing { get; private set; }
+    private void Hide()
+    {
+        IsShowing = false;
+        panel.SetActive(false);
+    }
 
     private void OnDisable()
     {

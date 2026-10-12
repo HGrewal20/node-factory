@@ -4,7 +4,18 @@ public class ChangeLog
     /*
     We can share changes here
 
-    October 10, 2026 - Matthew
+    October 12, 2026 - Matthew
+    - Refactored Hud List. Each grouping now has its own class
+    - Added colors for Hud Level Completed Buttons
+    - Added colors for Hud Shop Entry Prefab button
+    - Major user interface overhaul
+    - Added Game Over Screen. Not Used Yet. Required for next submission.
+    - Added splash screen. Required for next submission.
+    - Added Level Selection
+    - Added IO and level resetting
+    - Added an Info screen
+
+    October 10 and 11, 2026 - Matthew
     - Fixed machine placement bug when pasting machines off the edge of the map
     - Increased starting map size
     - Small fixes I don't remember
@@ -17,6 +28,7 @@ public class ChangeLog
     - Fixed Quit not exiting when running via Unity
     - Timing is fixed. Level runs slower. Game may need to be balanced again.
     - Removed GameDisplay (Texture2D pixel) and replaced with built in Texture2D.whiteTexture
+    - Massive amount of changes to the display system
 
     October 9, 2026 - Matthew
     - Improved some collections so that the index is computed and no longer passed in

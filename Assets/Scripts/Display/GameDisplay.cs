@@ -6,20 +6,19 @@ public class GameDisplay : MonoBehaviour
     private static readonly Color NODE_CONNECTED    = new Color(0.35f, 0.85f, 0.45f); // green
     private static readonly Color NODE_UNCONNECTED  = new Color(0.15f, 0.15f, 0.15f); // dark
 
-    // A single white pixel, stretched and tinted into whatever rect/color we need. This is the only "texture" this script uses.
+    [SerializeField] private MenuController menuController;
+
     private GameInteraction interaction;
-    private GameHud         hud;
 
     void Awake()
     {
         interaction = GetComponent<GameInteraction>();
-        hud         = GetComponent<GameHud        >();
     }
 
     void OnGUI()
     {
         GameData data = GameData.INSTANCE;
-        if (!data.IsPlaying() || data.IsPaused || HudLevelCompleted.IsShowing)
+        if (!data.IsPlaying() || data.IsPaused || HudLevelCompleted.IsShowing || menuController.IsGameOverShowing)
             return;
 
         MapView   mapView  = data.map.mapView;

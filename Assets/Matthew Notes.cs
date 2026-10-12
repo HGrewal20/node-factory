@@ -4,6 +4,7 @@ public class MatthewNotes
     Notes since I am dumb
 
     Push to repo
+        cd /d "C:\Users\Matthew\Unity Projects\node-factory"
         git add .
         git status
         git commit -m "Describe what you changed"

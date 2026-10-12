@@ -5,14 +5,14 @@ public class GameInteraction : MonoBehaviour
 {
     private static readonly MachineType[] HOTBAR = new MachineType[]
     {
-        MachineCollection.PROCESSOR_MINER,
-        MachineCollection.PROCESSOR_SMELTER,
-        MachineCollection.DELIVERY,
-        MachineCollection.SPLITTER_2,
-        MachineCollection.MERGER_2,
-        MachineCollection.FLIPPER_2,
-        MachineCollection.JUNCTION_A,
-        MachineCollection.JUNCTION_B,
+        MachineCollection.PROCESSOR_MINER,      // 1
+        MachineCollection.PROCESSOR_SMELTER,    // 2
+        MachineCollection.DELIVERY,             // 3
+        MachineCollection.SPLITTER_2,           // 4
+        MachineCollection.MERGER_2,             // 5
+        MachineCollection.FLIPPER_2,            // 6
+        MachineCollection.JUNCTION_A,           // 7
+        MachineCollection.JUNCTION_B,           // 8
     };
 
     private byte selectedType = MachineCollection.PROCESSOR_MINER.Index;
@@ -24,13 +24,15 @@ public class GameInteraction : MonoBehaviour
 
     public byte SelectedMachineType => selectedType;
 
+    [SerializeField] private MenuController menuController;
+
     private const float PAN_SPEED  = 20f;
     private const float ZOOM_SPEED = 0.1f;
 
     void Update()
     {
         GameData data = GameData.INSTANCE;
-        if (!data.IsPlaying() || data.IsPaused || HudLevelCompleted.IsShowing)
+        if (!data.IsPlaying() || data.IsPaused || HudLevelCompleted.IsShowing || menuController.IsGameOverShowing)
             return;
 
         // This project uses the new Input System package (not the old
@@ -52,7 +54,7 @@ public class GameInteraction : MonoBehaviour
     void OnGUI()
     {
         GameData data = GameData.INSTANCE;
-        if (!data.IsPlaying() || data.IsPaused || HudLevelCompleted.IsShowing)
+        if (!data.IsPlaying() || data.IsPaused || HudLevelCompleted.IsShowing || menuController.IsGameOverShowing)
             return;
 
         Event e         = Event.current;
@@ -129,6 +131,7 @@ public class GameInteraction : MonoBehaviour
             case KeyCode.Alpha5: return 5;
             case KeyCode.Alpha6: return 6;
             case KeyCode.Alpha7: return 7;
+            case KeyCode.Alpha8: return 8;
             default:             return 0;
         }
     }
