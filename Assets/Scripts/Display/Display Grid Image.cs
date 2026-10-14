@@ -2,6 +2,7 @@ using UnityEngine;
 
 // Reusable Image Class For Drawing Machines
 // Performance Is Not a Concern Because they are Small, Buffered, and Made Only When Needed
+// Alpha is ignored, but there is an option to draw with transparency later
 public sealed class DisplayGridImage
 {
     // Constants

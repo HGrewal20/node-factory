@@ -13,6 +13,11 @@ public class ChangeLog
     - Modified node display to show arrows based on direction
     - Node display is also color coded based on isEmpty or not
     - Increase display size in Map View
+    - Added machine preview
+    - Improved display of Menu Level
+    - Changed how wire works. It is now free and effectively infinite
+    - Fixed several small issues and improved interaction
+    - Added the details / overlay which displays machine information or node information
 
     October 12, 2026 - Matthew
     - Refactored Hud List. Each grouping now has its own class

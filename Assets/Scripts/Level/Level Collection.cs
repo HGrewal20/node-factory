@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 
 public static class LevelCollection
 {
@@ -32,19 +33,17 @@ public static class LevelCollection
         // place Miner -> Smelter -> Delivery, connect them, wait about 20 seconds.  (Michael)    
         level = Add(entries, "First Factory");
         level.mapSize.Set(MapSize.VALUE_MIN * 2, MapSize.VALUE_MIN);
-        level.machinesStarting
-            .Modify(MachineCollection.WIRE             , 4)
+        level.machinesStarting                                      // No Need to add wires, adding a few won't do anything as they are already given 1 million
             .Modify(MachineCollection.PROCESSOR_MINER  , 1)
             .Modify(MachineCollection.PROCESSOR_SMELTER, 1)
             .Modify(MachineCollection.DELIVERY         , 1);
         level.deliveryGoal
             .Add(ItemCollection.WAFER     ,  10);
 
-        // Level 1 - Test Level (kept for testing)
-        level = Add(entries, "Test Level");
+        // Level 1 - Large Level
+        level = Add(entries, "Large Level");
         level.mapSize.Set(MapSize.VALUE_MAX, MapSize.VALUE_MAX);
         level.machinesStarting
-            .Modify(MachineCollection.WIRE             , 2)
             .Modify(MachineCollection.PROCESSOR_MINER  , 1)
             .Modify(MachineCollection.PROCESSOR_SMELTER, 1)
             .Modify(MachineCollection.DELIVERY         , 1);
@@ -54,6 +53,20 @@ public static class LevelCollection
         level.deliveryGoal
             .Add(ItemCollection.SILICON   , 200)
             .Add(ItemCollection.WAFER     , 500);
+
+        // Level 2 - Test Level
+        level = Add(entries, "Test");
+        level.mapSize.Set(MapSize.VALUE_MIN * 4, MapSize.VALUE_MIN * 2);
+        for (int i = 0; i < MachineCollection.Count(); i++)
+        {
+        level.machinesStarting.Modify( (byte) i,  10);        // Give 10 of every machine
+        }
+        for (int i = 0; i < ItemCollection.Count(); i++)
+        {
+        Item item = ItemCollection.Get( (byte) i );
+        level.deliveryStarting.Add   (item, 200);             // Give 200 of every resource
+        }
+        level.deliveryGoal.Add(ItemCollection.WAFER,  205);   // Quickly Achivable goal
 
         return entries;
     }

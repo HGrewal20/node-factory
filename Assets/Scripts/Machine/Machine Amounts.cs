@@ -6,12 +6,16 @@ public class MachineAmounts
     private readonly int[] amounts = new int[ MachineCollection.Count() ];  // Cannot be negative
 
     // Constructor
-    public MachineAmounts(){}
+    public MachineAmounts()
+    {
+        Clear();
+    }
 
     // Clear
     public void Clear()
     {
          Array.Clear(amounts, 0, amounts.Length);
+         amounts[ MachineCollection.WIRE.Index ] = 1000000; // 1,000,000 free wires - effectively infinite
     }
 
     // Get

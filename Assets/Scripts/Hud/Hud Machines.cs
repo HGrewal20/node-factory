@@ -15,6 +15,8 @@ public class HudMachines : MonoBehaviour
         for (byte i = 0; i < count; i++)
         {
             MachineType machine = MachineCollection.Get(i);
+            if (machine == MachineCollection.WIRE)
+                return;
 
             HudMachineEntry entry = Instantiate(prefab, content);
             entry.Setup(machine, interaction);

@@ -18,16 +18,18 @@ public sealed class DisplayGridImages
     }
 
     // Colors
-    private static readonly Color32 ColorEmpty     = new Color32( 19,  30,  39, 255);
-    private static readonly Color32 ColorGridLine  = new Color32( 42,  65,  78, 255);
-    private static readonly Color32 ColorMachine   = new Color32( 57,  78, 100, 255);
-    private static readonly Color32 ColorWire      = new Color32( 35, 218, 245, 255);
-    private static readonly Color32 ColorNodeEmpty = new Color32(255, 172,  54, 255);
-    private static readonly Color32 ColorNodeFull  = new Color32( 63, 245, 132, 255);
+    private static readonly Color32 ColorEmpty          = new Color32( 19,  30,  39, 255);
+    private static readonly Color32 ColorGridLine       = new Color32( 42,  65,  78, 255);
+    private static readonly Color32 ColorMachine        = new Color32( 85, 110, 135, 255);
+    private static readonly Color32 ColorMachineInvalid = new Color32(220,  55,  65, 255);
+    private static readonly Color32 ColorWire           = new Color32( 35, 218, 245, 255);
+    private static readonly Color32 ColorNodeEmpty      = new Color32(255, 172,  54, 255);
+    private static readonly Color32 ColorNodeFull       = new Color32( 63, 245, 132, 255);
 
     // Member Variables
     public readonly DisplayGridImage Empty;
     public readonly DisplayGridImage MachineEmpty;
+    public readonly DisplayGridImage MachineInvalid;
 
     // Wires
     public readonly DisplayGridImage WireUp;
@@ -54,9 +56,13 @@ public sealed class DisplayGridImages
         Empty.Clear(ColorEmpty);
         Empty.Rect(ColorGridLine, 0, 0, size - 1, size - 1);
 
-        // Empty Machine
+        // Machine Empty
         MachineEmpty = new DisplayGridImage(size);
         MachineEmpty.Clear(ColorMachine);
+
+        // Machine Invalid
+        MachineInvalid = new DisplayGridImage(size);
+        MachineInvalid.Clear(ColorMachineInvalid);
 
         // Wire Arrows
         WireUp = new DisplayGridImage(size);
@@ -66,7 +72,7 @@ public sealed class DisplayGridImages
         WireRight = WireUp   .Rotate90CW();
         WireDown  = WireRight.Rotate90CW();
 
-        // Empty Node Arrows
+        // Node Arrows - Empty
         NodeEmptyUp = new DisplayGridImage(size);
         NodeEmptyUp.Clear(ColorMachine);
         DisplayGridArrow.Draw(NodeEmptyUp, ColorNodeEmpty);
@@ -75,7 +81,7 @@ public sealed class DisplayGridImages
         NodeEmptyDown  = NodeEmptyRight.Rotate90CW();
         NodeEmptyLeft  = NodeEmptyDown .Rotate90CW();
 
-        // Full Node Arrows
+        // Node Arrows - Full
         NodeFullUp = new DisplayGridImage(size);
         NodeFullUp.Clear(ColorMachine);
         DisplayGridArrow.Draw(NodeFullUp, ColorNodeFull);

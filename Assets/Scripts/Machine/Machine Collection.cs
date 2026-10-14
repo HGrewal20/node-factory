@@ -42,7 +42,9 @@ public static class MachineCollection
     public static readonly MachineType SPLITTER_2           = Add("Splitter 1 to 2"  );
     public static readonly MachineType SPLITTER_3           = Add("Splitter 1 to 3"  );
     public static readonly MachineType SPLITTER_4           = Add("Splitter 1 to 4"  );
-    public static readonly MachineType WIRE                 = Add("Wire"             ); // Here & Above: Fixed (Doesn't Change)
-    public static readonly MachineType PROCESSOR_MINER      = Add("Miner"            ); // Here & Below: Add More Processors Later
-    public static readonly MachineType PROCESSOR_SMELTER    = Add("Smelter"          ); // Here & Below: Add More Processors Later
+    public static readonly MachineType WIRE                 = Add("Wire"             );     // Wire is not a real machine anymore. No shop entry. Not selectable. Treated as invalid.
+    // --------------------------------------------------------------------------------     // Wire Gives 1 million free wires to make it effectively free and infinite
+    // --------------------------------------------------------------------------------     // Here & Above: Fixed (Doesn't Change)
+    public static readonly MachineType PROCESSOR_MINER      = Add("Miner"            );     // Here & Below: Add More Processors Later
+    public static readonly MachineType PROCESSOR_SMELTER    = Add("Smelter"          );     // Here & Below: Add More Processors Later
 }

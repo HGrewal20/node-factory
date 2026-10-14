@@ -8,16 +8,16 @@ public class MenuLevelEntry : MonoBehaviour
     // Member Variables
     [SerializeField] private TMP_Text       textName;
     [SerializeField] private TMP_Text       textSize;
-    [SerializeField] private TMP_Text       textStatus;
+    [SerializeField] private TMP_Text       textPlay;
     [SerializeField] private Button         buttonPlay;
     [SerializeField] private Button         buttonReset;
                      private Level          level;
                      private Action<Level>  onPlay;
                      private Action<Level>  onReset;
 
-    public void Setup(Level level, MenuController menuController)
+    public void Setup(Level newLevel, MenuController menuController)
     {
-        this.level = level;
+        level   = newLevel;
         onPlay  = menuController.PlayLevel;
         onReset = menuController.ResetLevel;
 
@@ -37,7 +37,7 @@ public class MenuLevelEntry : MonoBehaviour
     {
         bool hasSave = GameSavePaths.Exists(level.Index);
 
-        textStatus.text = hasSave ? "Saved" : "New";
+        textPlay.text = hasSave ? "Load" : "Start";
         buttonReset.gameObject.SetActive(hasSave);
     }
 

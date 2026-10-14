@@ -4,15 +4,16 @@ using UnityEngine.InputSystem;
 public class MenuController : MonoBehaviour
 {
     // Member Variables
-    [SerializeField] private GameObject   menuMain;
-    [SerializeField] private GameObject   menuPause;
-    [SerializeField] private GameObject   menuLevels;
-    [SerializeField] private GameObject   menuInfo;
-    [SerializeField] private GameObject   menuGameOver;
-    [SerializeField] private GameObject   hud;
-    [SerializeField] private HudList      hudList;
-    [SerializeField] private MenuGameOver gameOver;
-                     private GameObject   currentMenu;
+    [SerializeField] private DisplayInteraction displayInteraction;
+    [SerializeField] private GameObject         menuMain;
+    [SerializeField] private GameObject         menuPause;
+    [SerializeField] private GameObject         menuLevels;
+    [SerializeField] private GameObject         menuInfo;
+    [SerializeField] private GameObject         menuGameOver;
+    [SerializeField] private GameObject         hud;
+    [SerializeField] private HudList            hudList;
+    [SerializeField] private MenuGameOver       gameOver;
+                     private GameObject         currentMenu;
 
     public bool IsGameOverShowing => currentMenu == menuGameOver;
 
@@ -53,15 +54,17 @@ public class MenuController : MonoBehaviour
 
     private void HandleEscape()
     {
-        GameData data = GameData.INSTANCE;
-
+        
         if (IsGameOverShowing || HudLevelCompleted.IsShowing)
             return;
 
+        GameData data = GameData.INSTANCE;
         if (data.IsPlaying())
         {
-            if (data.IsPaused) Resume();
-            else               Pause ();
+            if (data.IsPaused)
+                Resume();
+            else if ( !displayInteraction.TryUnselectMachine() )
+                Pause();
         }
         else if (currentMenu != menuMain)
         {

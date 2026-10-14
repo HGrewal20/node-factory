@@ -3,7 +3,7 @@ using System;
 public class MachineType
 {
     // Member Variables
-    public readonly  byte   Index ;
+    public readonly  byte   Index;
     public readonly  String Name;
 
     // Constructor

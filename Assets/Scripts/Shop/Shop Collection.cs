@@ -45,8 +45,8 @@ public static class ShopCollection
         AddEntry(entries, MachineCollection.MERGER_4         ).cost.Add(ItemCollection.WAFER, 10);
         AddEntry(entries, MachineCollection.SPLITTER_2       ).cost.Add(ItemCollection.WAFER,  5);     // Splitters
         AddEntry(entries, MachineCollection.SPLITTER_3       ).cost.Add(ItemCollection.WAFER,  8);
-        AddEntry(entries, MachineCollection.SPLITTER_4       ).cost.Add(ItemCollection.WAFER, 10);
-        AddEntry(entries, MachineCollection.WIRE             ).cost.Add(ItemCollection.WAFER,  1);     // Wire
+        AddEntry(entries, MachineCollection.SPLITTER_4       ).cost.Add(ItemCollection.WAFER, 10);      
+                                                                                                       // Wire Invalid. Don't add it.
         AddEntry(entries, MachineCollection.PROCESSOR_MINER  ).cost.Add(ItemCollection.WAFER,  8);     // Processors
         AddEntry(entries, MachineCollection.PROCESSOR_SMELTER).cost.Add(ItemCollection.WAFER, 12).Add(ItemCollection.SILICON, 4);
 
