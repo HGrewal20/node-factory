@@ -12,10 +12,10 @@ public class HudMachineEntry : MonoBehaviour
     [SerializeField] private TMP_Text           text;
     [SerializeField] private Button             button;
                      private MachineType        machine;
-                     private GameInteraction    interaction;
+                     private DisplayInteraction interaction;
 
     // Setup
-    public void Setup(MachineType machine, GameInteraction interaction)
+    public void Setup(MachineType machine, DisplayInteraction interaction)
     {
         this.machine     = machine;
         this.interaction = interaction;

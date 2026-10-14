@@ -4,6 +4,16 @@ public class ChangeLog
     /*
     We can share changes here
 
+    October 13, 2026 - Matthew
+    - Refactored side and direction into MachineConstants
+    - Added direction computation for MachineNode
+    - Overhauled the level drawing to allow completing the project
+    - Current colors are kind of bad
+    - Modified wire display to draw as arrows based on direction
+    - Modified node display to show arrows based on direction
+    - Node display is also color coded based on isEmpty or not
+    - Increase display size in Map View
+
     October 12, 2026 - Matthew
     - Refactored Hud List. Each grouping now has its own class
     - Added colors for Hud Level Completed Buttons

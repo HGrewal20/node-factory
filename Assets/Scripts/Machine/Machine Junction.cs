@@ -12,13 +12,13 @@ public class MachineJunction : Machine
         bool isJunctionA = IsJunctionA();
         if (isJunctionA)
         {
-        inputs .Add( true, true, MachineNode.SIDE_BOT, 1, 0, 1, null);         // Bot = input
-        outputs.Add(false, true, MachineNode.SIDE_TOP, 1, 2, 1, null);         // Top = output
+        inputs .Add( true, true, MachineConstants.SIDE_BOT, 1, 0, 1, null);         // Bot = input
+        outputs.Add(false, true, MachineConstants.SIDE_TOP, 1, 2, 1, null);         // Top = output
         }
         else // if (isJunctionB)
         {
-        outputs.Add(false, true, MachineNode.SIDE_BOT, 1, 0, 1, null);         // Bot = output
-        inputs .Add( true, true, MachineNode.SIDE_TOP, 1, 2, 1, null);         // Top = input
+        outputs.Add(false, true, MachineConstants.SIDE_BOT, 1, 0, 1, null);         // Bot = output
+        inputs .Add( true, true, MachineConstants.SIDE_TOP, 1, 2, 1, null);         // Top = input
         }
     }
 

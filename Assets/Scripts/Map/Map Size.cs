@@ -6,6 +6,8 @@ public class MapSize
     public const int VALUE_MIN =  15;
     public const int VALUE_MAX = 200;
 
+    public static readonly MapSize ZERO = new MapSize();
+
     // Member Variables
     public int Width  { get; private set; }
     public int Height { get; private set; }

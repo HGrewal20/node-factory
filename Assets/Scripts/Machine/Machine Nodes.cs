@@ -32,9 +32,9 @@ public class MachineNodes
         entry.SetAllowed(itemAllowed, max);
         return entry;
     }
-    public void AddInputsLeft                (bool isEnabled, int count,              int max = 1, Item itemAllowed = null) { AddMultiple( true, isEnabled, count,       0, max, itemAllowed, MachineNode.SIDE_LEFT ); }
-    public void AddOutputsRight              (bool isEnabled, int count, int offsetX, int max = 1, Item itemAllowed = null) { AddMultiple(false, isEnabled, count, offsetX, max, itemAllowed, MachineNode.SIDE_RIGHT); }
-    public void AddMultiple    (bool isInput, bool isEnabled, int count, int offsetX, int max = 1, Item itemAllowed = null, byte side = MachineNode.SIDE_NONE)
+    public void AddInputsLeft                (bool isEnabled, int count,              int max = 1, Item itemAllowed = null) { AddMultiple( true, isEnabled, count,       0, max, itemAllowed, MachineConstants.SIDE_LEFT ); }
+    public void AddOutputsRight              (bool isEnabled, int count, int offsetX, int max = 1, Item itemAllowed = null) { AddMultiple(false, isEnabled, count, offsetX, max, itemAllowed, MachineConstants.SIDE_RIGHT); }
+    public void AddMultiple    (bool isInput, bool isEnabled, int count, int offsetX, int max = 1, Item itemAllowed = null, byte side = MachineConstants.SIDE_NONE)
     {
         int offsetY = 1;
 

@@ -21,13 +21,6 @@ using UnityEngine;
 
 public class MachineNode
 {
-    // Side
-    public const byte SIDE_NONE  = 0;
-    public const byte SIDE_TOP   = 1;
-    public const byte SIDE_LEFT  = 2;
-    public const byte SIDE_RIGHT = 3;
-    public const byte SIDE_BOT   = 4;
-
     // Member Variables
     public  bool        IsInput     { get; private set; }
     public  bool        IsEnabled   { get; private set; } // "Hides" or "Deactivates" the node
@@ -112,6 +105,12 @@ public class MachineNode
     public void SetSide(byte side)
     {
         Side = side;
+    }
+
+    // Direction
+    public byte Direction()
+    {
+        return MachineConstants.GetDirection(Side, IsInput);
     }
 
     // Both

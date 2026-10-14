@@ -5,7 +5,7 @@ public class HudMachines : MonoBehaviour
 {
     // Member Variables
     [SerializeField] private          HudMachineEntry       prefab;
-    [SerializeField] private          GameInteraction       interaction;
+    [SerializeField] private          DisplayInteraction    interaction;
                      private readonly List<HudMachineEntry> entries         = new();
 
     // Build

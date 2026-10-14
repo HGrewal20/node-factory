@@ -20,11 +20,11 @@ public static class MachineOperations
 
         switch (oneNode.Side)
         {
-            case MachineNode.SIDE_NONE:             return false;
-            case MachineNode.SIDE_TOP:   dy = +1;   break;
-            case MachineNode.SIDE_LEFT:  dx = -1;   break;
-            case MachineNode.SIDE_RIGHT: dx = +1;   break;
-            case MachineNode.SIDE_BOT:   dy = -1;   break;
+            case MachineConstants.SIDE_NONE:             return false;
+            case MachineConstants.SIDE_TOP:   dy = +1;   break;
+            case MachineConstants.SIDE_LEFT:  dx = -1;   break;
+            case MachineConstants.SIDE_RIGHT: dx = +1;   break;
+            case MachineConstants.SIDE_BOT:   dy = -1;   break;
         }
 
         // Find Next Machine
@@ -87,7 +87,7 @@ public static class MachineOperations
         Vector2Int start     = Vector2Int.zero;
         Vector2Int end       = Vector2Int.zero;
         bool       isGood    = false;
-        byte       direction = MachineWire.DIRECTION_NONE;
+        byte       direction = MachineConstants.DIRECTION_NONE;
 
         // Try Horizontal Connection
         if (inputPos.y == outputPos.y)
@@ -103,13 +103,13 @@ public static class MachineOperations
             start     = new Vector2Int(x0 + 1, y); // Start one square right of input  end
             end       = new Vector2Int(x1 - 1, y); // End   one square left  of output end
             isGood    = true;
-            direction = MachineWire.DIRECTION_RIGHT;
+            direction = MachineConstants.DIRECTION_RIGHT;
         }
         // Try Vertical Connection
         else if (inputPos.x == outputPos.x)
         {
-            if (inputPos.y < outputPos.y)   direction = MachineWire.DIRECTION_UP;
-            else                            direction = MachineWire.DIRECTION_DOWN;
+            if (inputPos.y < outputPos.y)   direction = MachineConstants.DIRECTION_UP;
+            else                            direction = MachineConstants.DIRECTION_DOWN;
 
             int y0 = Mathf.Min(inputPos.y, outputPos.y);
             int y1 = Mathf.Max(inputPos.y, outputPos.y);

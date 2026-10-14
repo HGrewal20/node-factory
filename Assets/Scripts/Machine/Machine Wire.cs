@@ -3,12 +3,6 @@
 // Remove wire -> both points disconnected and wire removed
 public class MachineWire : Machine
 {
-    // Constants
-    public const byte DIRECTION_NONE  = 0;
-    public const byte DIRECTION_RIGHT = 1;
-    public const byte DIRECTION_UP    = 2;
-    public const byte DIRECTION_DOWN  = 3;
-
     // Member Variables
     public          byte                  Direction         { get; private set; }
     public readonly MachineWireConnection connectionInput  = new MachineWireConnection(true );
@@ -33,11 +27,6 @@ public class MachineWire : Machine
     {
         Direction = direction;
     }
-
-    public bool IsDirectionNone (){ return (Direction == DIRECTION_NONE ); }
-    public bool IsDirectionRight(){ return (Direction == DIRECTION_RIGHT); }
-    public bool IsDirectionUp   (){ return (Direction == DIRECTION_UP   ); }
-    public bool IsDirectionDown (){ return (Direction == DIRECTION_DOWN ); }
 
     // Game Tick
     public override void GameTick()
