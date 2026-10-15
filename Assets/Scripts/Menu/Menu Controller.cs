@@ -185,6 +185,7 @@ public class MenuController : MonoBehaviour
 
         gameOver.Refresh();
         Show(menuGameOver);
+        ResetLevel( GameData.INSTANCE.Level );
     }
 
     public void Quit()

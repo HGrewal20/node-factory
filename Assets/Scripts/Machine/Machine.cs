@@ -90,6 +90,13 @@ public class Machine
         nodeOutput.TryTransferInternal(nodeInput);
     }
 
+    // Flush
+    public void FlushAllNodes()
+    {
+        inputs .InputEmpty();
+        outputs.InputEmpty();
+    }
+
     // Link
     public virtual void Link(GameLinks links)
     {

@@ -38,6 +38,7 @@ public class DisplayGame : MonoBehaviour
         MapMachines       machines = data.map.mapMachines;
 
         // Draw - Begin
+        display ??= new DisplayImage();
         display.Begin(view);
 
         // Set Image Position
@@ -135,6 +136,6 @@ public class DisplayGame : MonoBehaviour
 
     private void OnDestroy()
     {
-        display.Dispose();
+        display?.Dispose();
     }
 }

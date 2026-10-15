@@ -79,7 +79,9 @@ public class MachineProcessor : Machine
     // Recipe - Warning! This is the index relative to this classes recipes not the global recipes collection
     public void SetRecipe(int index)
     {
-        ClearRecipe();
+        FlushAllNodes();
+        ClearRecipe  ();
+
         Recipe = GetRecipes().Get(index);
         inputs .SetAccepts(Recipe.inputs );
         outputs.SetAccepts(Recipe.outputs);

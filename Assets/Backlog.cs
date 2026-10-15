@@ -4,11 +4,12 @@ public class Backlog
     Matthew - Oct 11, 2026
 
     Requirements for Part 3 - Alpha
+    Basically finished. Can try to do additional improvements if you want.
 
         Category	    Future work
         --------        -----------
-        Gameplay        Scoring condition                                   - Matthew 2
-        Gameplay        Add level time and game over if timed out           - Matthew 1
+        Gameplay        Scoring condition                                   - Done Oct 15, 2026 - Matthew
+        Gameplay        Add level time and game over if timed out           - Done Oct 15, 2026 - Matthew
         Gameplay	    Recipe selection for processor machines             - Done Oct 14, 2026 - Matthew
         Gameplay	    Machine placement preview - footprint and nodes     - Done Oct 14, 2026 - Matthew
         Gameplay	    Machine hover panel with details                    - Done Oct 14, 2026 - Matthew

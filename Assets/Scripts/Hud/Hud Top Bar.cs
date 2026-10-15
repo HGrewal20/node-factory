@@ -13,8 +13,10 @@ public class HudTopBar : MonoBehaviour
         if ( !data.IsPlaying() || data.IsPaused )
             return;
 
+        float time = data.IsStateCompleted() ? data.TimeElapsed : data.TimeRemaining;
+
         textLevel     .text = "Level " + (data.Level.Index + 1);
-        textTime      .text = HudTools.FormatTime(data.TimeElapsed);
-        textCompletion.text = data.IsCompleted ? "Completed" : $"{data.Completion * 100f:F0}%";
+        textTime      .text = HudTools.FormatTime(time);
+        textCompletion.text = data.IsStateCompleted() ? "Completed" : $"{data.Completion * 100f:F0}%";
     }
 }

@@ -8,6 +8,7 @@ public class HudLevelCompleted : MonoBehaviour
     [SerializeField] private GameObject     panel;
     [SerializeField] private TMP_Text       textLevel;
     [SerializeField] private TMP_Text       textTime;
+    [SerializeField] private TMP_Text       textScore;
     [SerializeField] private Button         buttonContinue;
     [SerializeField] private Button         buttonNext;
     [SerializeField] private Button         buttonQuit;
@@ -32,8 +33,9 @@ public class HudLevelCompleted : MonoBehaviour
 
         GameData data = GameData.INSTANCE;
 
-        textLevel.text = "Level " + (data.Level.Index + 1);
+        textLevel.text = "LEVEL " + (data.Level.Index + 1);
         textTime .text = HudTools.FormatTime(data.TimeElapsed);
+        textScore.text = "" + data.Score;
 
         int nextIndex = data.Level.Index + 1;
         buttonNext.gameObject.SetActive(nextIndex < LevelCollection.Count());

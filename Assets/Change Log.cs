@@ -4,6 +4,16 @@ public class ChangeLog
     /*
     We can share changes here
 
+    October 15, 2026 - Matthew
+    - MachineProcessor now flushes all nodes when changing recipes
+    - Added time remaining.
+    - Hud shows time remaining if they are playing. Shows time elapsed if game completed.
+    - Game now fails if time runs out without meeting the goal.
+    - Added Impossible level to test timeout
+    - Redesigned Menu Level Entry and added level time to the display
+    - Added safety against the Display Game failing
+    - Added a score system
+
     October 14, 2026 - Matthew
     - Added machine preview
     - Improved display of Menu Level

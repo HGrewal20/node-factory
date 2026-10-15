@@ -7,7 +7,7 @@ public class MenuLevelEntry : MonoBehaviour
 {
     // Member Variables
     [SerializeField] private TMP_Text       textName;
-    [SerializeField] private TMP_Text       textSize;
+    [SerializeField] private TMP_Text       textInfo;
     [SerializeField] private TMP_Text       textPlay;
     [SerializeField] private Button         buttonPlay;
     [SerializeField] private Button         buttonReset;
@@ -21,8 +21,11 @@ public class MenuLevelEntry : MonoBehaviour
         onPlay  = menuController.PlayLevel;
         onReset = menuController.ResetLevel;
 
+        string mapSize = $"{level.mapSize.Width} x {level.mapSize.Height}";
+        string time    = $"{level.TimeSec} + Sec";
+
         textName.text = $"{level.Index + 1:00} - {level.Name}";
-        textSize.text = $"{level.mapSize.Width} x {level.mapSize.Height}";
+        textInfo.text = mapSize + " - " + time;
 
         buttonPlay .onClick.RemoveAllListeners();
         buttonReset.onClick.RemoveAllListeners();
