@@ -3,8 +3,8 @@ using System;
 public class Item
 {
     // Member Variables
-    public byte   Index { get; private set; }
-    public String Name  { get; private set; }
+    public readonly byte   Index;
+    public readonly String Name;
 
     // Constructor
     public Item(byte index, String name)

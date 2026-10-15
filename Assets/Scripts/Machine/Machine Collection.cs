@@ -31,9 +31,9 @@ public static class MachineCollection
 
     // Entries
     public static readonly MachineType DELIVERY             = Add("Delivery"         );
-    public static readonly MachineType FLIPPER_2            = Add("Flipper 2x2"      );
-    public static readonly MachineType FLIPPER_3            = Add("Flipper 3x3"      );
-    public static readonly MachineType FLIPPER_4            = Add("Flipper 4x4"      );
+    public static readonly MachineType FLIPPER_2            = Add("Flipper 2 x 2"    );
+    public static readonly MachineType FLIPPER_3            = Add("Flipper 3 x 3"    );
+    public static readonly MachineType FLIPPER_4            = Add("Flipper 4 x 4"    );
     public static readonly MachineType JUNCTION_A           = Add("Junction A"       );
     public static readonly MachineType JUNCTION_B           = Add("Junction B"       );
     public static readonly MachineType MERGER_2             = Add("Merger 2 to 1"    );

@@ -12,6 +12,7 @@ public class HudLevelCompleted : MonoBehaviour
     [SerializeField] private Button         buttonNext;
     [SerializeField] private Button         buttonQuit;
     [SerializeField] private MenuController menuController;
+    [SerializeField] private HudRecipes     hudRecipes;
 
     public static bool IsShowing { get; private set; }
 
@@ -27,6 +28,8 @@ public class HudLevelCompleted : MonoBehaviour
 
     public void Show()
     {
+        hudRecipes.TryClose();
+
         GameData data = GameData.INSTANCE;
 
         textLevel.text = "Level " + (data.Level.Index + 1);

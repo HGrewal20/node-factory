@@ -22,6 +22,7 @@ public class DisplayInteraction : MonoBehaviour
 
     [SerializeField] private HudDetails     hudDetails;
     [SerializeField] private MenuController menuController;
+    [SerializeField] private HudRecipes     hudRecipes;
                      private byte           selectedType        = MachineCollection.WIRE.Index;
                      public  byte           SelectedMachineType => selectedType;
 
@@ -55,7 +56,7 @@ public class DisplayInteraction : MonoBehaviour
 
         // Do Nothing if Not Visible
         GameData data = GameData.INSTANCE;
-        if (!data.IsPlaying() || data.IsPaused || HudLevelCompleted.IsShowing || (menuController != null && menuController.IsGameOverShowing))
+        if (!data.IsPlaying() || data.IsPaused || HudLevelCompleted.IsShowing || (menuController != null && menuController.IsGameOverShowing) || hudRecipes.gameObject.activeSelf)
             return;
 
         // Update View
@@ -193,8 +194,8 @@ public class DisplayInteraction : MonoBehaviour
         }
 
         MachineNode node = machine.GetNode(grid);
-        if (node != null && node.IsEnabled)
-            MachineOperations.TryConnect(machine, node);
+             if (node != null && node.IsEnabled)                            MachineOperations.TryConnect(machine, node);
+        else if (node == null && machine is MachineProcessor processor)     hudRecipes.Set(processor);
     }
 
     private static void RightClick(GameData data, Vector2Int grid)

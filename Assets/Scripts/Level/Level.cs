@@ -3,8 +3,8 @@ using System;
 public class Level
 {
     // Member Variables
-    public          byte            Index           { get; private set; } 
-    public          String          Name            { get; private set; }
+    public readonly byte            Index;
+    public readonly String          Name;
     public readonly MapSize         mapSize          = new MapSize       ();
     public readonly MachineAmounts  machinesStarting = new MachineAmounts();
     public readonly ItemAmounts     deliveryStarting = new ItemAmounts   ();

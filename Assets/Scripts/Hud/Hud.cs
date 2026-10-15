@@ -2,15 +2,13 @@ using UnityEngine;
 
 public class Hud : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    // References
+    [SerializeField] private HudList    hudList;
+    [SerializeField] private HudRecipes hudRecipes;
 
-    // Update is called once per frame
-    void Update()
+    public void ResetHud()
     {
-        
+        hudList   .ResetHud();
+        hudRecipes.TryClose();
     }
 }

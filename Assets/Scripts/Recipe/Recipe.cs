@@ -4,9 +4,9 @@ using UnityEngine;
 public class Recipe
 {
     // Member Variables
-    public          byte        Index    { get; private set; }
-    public          String      Name     { get; private set; }
-    public          int         TimeSecs { get; private set; }  // Cannot be less than 1
+    public readonly byte        Index;
+    public readonly String      Name;
+    public readonly int         TimeSecs;
     public readonly ItemAmounts inputs;
     public readonly ItemAmounts outputs;
     

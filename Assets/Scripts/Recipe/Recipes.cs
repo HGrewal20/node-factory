@@ -11,8 +11,9 @@ public class Recipes
     // Add
     public Recipes Add(Recipe entry)
     {
-        if ( !IsContained(entry) )
+        if ( entry != null && !IsContained(entry) )
             entries.Add(entry);
+
         return this;
     }
 

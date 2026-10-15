@@ -4,7 +4,7 @@ using UnityEngine;
 public class HudDetails : MonoBehaviour
 {
     // References
-    [SerializeField] private HudDetailsLine[] lines;
+    [SerializeField] private HudLine[] lines;
 
     // Colors
     private static readonly Color COLOR_NAME   = Color.white;

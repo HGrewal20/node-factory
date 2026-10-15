@@ -48,8 +48,8 @@ public class MapView
     public void Scroll(Vector2 screenFraction)
     {
         Center += new Vector2(
-            screenFraction.x * Screen.width  / Pixels,
-            screenFraction.y * Screen.height / Pixels
+            +screenFraction.x * Screen.width  / Pixels,
+            -screenFraction.y * Screen.height / Pixels
         );
         UpdateView();
     }

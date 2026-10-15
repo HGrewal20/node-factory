@@ -10,8 +10,8 @@ public class MenuController : MonoBehaviour
     [SerializeField] private GameObject         menuLevels;
     [SerializeField] private GameObject         menuInfo;
     [SerializeField] private GameObject         menuGameOver;
-    [SerializeField] private GameObject         hud;
-    [SerializeField] private HudList            hudList;
+    [SerializeField] private Hud                hud;
+    [SerializeField] private HudRecipes         hudRecipes;
     [SerializeField] private MenuGameOver       gameOver;
                      private GameObject         currentMenu;
 
@@ -62,9 +62,15 @@ public class MenuController : MonoBehaviour
         if (data.IsPlaying())
         {
             if (data.IsPaused)
+            {
                 Resume();
-            else if ( !displayInteraction.TryUnselectMachine() )
-                Pause();
+                return;
+            }
+
+            if ( hudRecipes        .TryClose          () )  return;
+            if ( displayInteraction.TryUnselectMachine() )  return;
+
+            Pause();
         }
         else if (currentMenu != menuMain)
         {
@@ -90,7 +96,7 @@ public class MenuController : MonoBehaviour
         GameData data = GameData.INSTANCE;
 
         bool visible = data.IsPlaying() && !data.IsPaused && !IsGameOverShowing;
-        hud.SetActive(visible);
+        hud.gameObject.SetActive(visible);
     }
 
     public void Refresh()
@@ -120,14 +126,14 @@ public class MenuController : MonoBehaviour
     public void PlayLevel(Level level)
     {
         GameData.INSTANCE.Load(level.Index);
-        hudList.ResetHud();
+        hud.ResetHud();
         Refresh();
     }
 
     public void StartLevel(Level level)
     {
         GameData.INSTANCE.LevelStart(level);
-        hudList.ResetHud();
+        hud.ResetHud();
         Refresh();
     }
 
@@ -174,7 +180,7 @@ public class MenuController : MonoBehaviour
 
     public void OpenGameOver()
     {
-        if (!GameData.INSTANCE.IsPlaying())
+        if ( !GameData.INSTANCE.IsPlaying() )
             return;
 
         gameOver.Refresh();

@@ -4,6 +4,20 @@ public class ChangeLog
     /*
     We can share changes here
 
+    October 14, 2026 - Matthew
+    - Added machine preview
+    - Improved display of Menu Level
+    - Changed how wire works. It is now free and effectively infinite
+    - Fixed several small issues and improved interaction
+    - Added the details / overlay which displays machine information or node information
+    Second Commit
+    - Small fix
+    - Tested Flippers, Junctions, Mergers, and Splitters. All work perfectly.
+    - Fixed map vertical scroll direction
+    - Changed several properties to read only
+    - Removed an unused class
+    - Added Recipe Selection
+
     October 13, 2026 - Matthew
     - Refactored side and direction into MachineConstants
     - Added direction computation for MachineNode
@@ -13,11 +27,6 @@ public class ChangeLog
     - Modified node display to show arrows based on direction
     - Node display is also color coded based on isEmpty or not
     - Increase display size in Map View
-    - Added machine preview
-    - Improved display of Menu Level
-    - Changed how wire works. It is now free and effectively infinite
-    - Fixed several small issues and improved interaction
-    - Added the details / overlay which displays machine information or node information
 
     October 12, 2026 - Matthew
     - Refactored Hud List. Each grouping now has its own class
