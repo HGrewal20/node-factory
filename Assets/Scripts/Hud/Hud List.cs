@@ -14,6 +14,9 @@ public class HudList : MonoBehaviour
         Requirements,
     }
 
+    // Instance
+    public static HudList INSTANCE { get; private set; }
+
     // Member Variables
     [SerializeField] private TMP_Text         title;
     [SerializeField] private Transform        content;
@@ -25,12 +28,18 @@ public class HudList : MonoBehaviour
     [SerializeField] private Button           buttonDelivered;
     [SerializeField] private Button           buttonShop;
     [SerializeField] private Button           buttonRequirements;
+                     private Tab              currentTab;
 
-    private Tab currentTab;
+    public bool IsSelectedMachines    () { return (currentTab == Tab.Machines    ); }
+    public bool IsSelectedDelivered   () { return (currentTab == Tab.Delivered   ); }
+    public bool IsSelectedShop        () { return (currentTab == Tab.Shop        ); }
+    public bool IsSelectedRequirements() { return (currentTab == Tab.Requirements); }
 
     // Initialize
     private void Awake()
     {
+        INSTANCE = this;
+
         buttonMachines    .onClick.AddListener(ShowMachines    );
         buttonDelivered   .onClick.AddListener(ShowDelivered   );
         buttonShop        .onClick.AddListener(ShowShop        );
@@ -74,7 +83,9 @@ public class HudList : MonoBehaviour
     private void SetTabColor(Button button, bool selected)
     {
         ColorBlock colors = button.colors;
-        colors.normalColor = selected ? Color.green : Color.white;
+        colors.normalColor      = selected ? Color.green : Color.white;
+     // colors.highlightedColor = MenuStyle.BUTTON_COLOR_HIGHLIGHTED;       // Don't Change the colors
+     // colors.selectedColor    = MenuStyle.BUTTON_COLOR_SELECTED;
         button.colors = colors;
     }
 

@@ -127,6 +127,7 @@ public class ClaudeReadme
         - The other two can pitch in where needed
 
     Notes for Adding Content (Michael)
+        - Can have at most 4 inputs and 4 outputs per recipe.
         - ItemCollection. Change and add Items here.
         - LevelCollection. Add levels to CreateLevels().
         - MachineCollection. Add processors under entries.

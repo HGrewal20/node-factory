@@ -29,33 +29,65 @@ public static class RecipeCollection
             entry.Debug(indentation);
     }
 
-    // Entries - All - Circuit Theme (Michael)
-    public static readonly Recipe MINE_SILICON = Add("Mine Silicon", 1, 
-                                                    null,
-                                                    new ItemAmounts().Add(ItemCollection.SILICON, 1) );
-    public static readonly Recipe REFINE_WAFER = Add("Refine Wafer", 2, 
-                                                    new ItemAmounts().Add(ItemCollection.SILICON, 1),
-                                                    new ItemAmounts().Add(ItemCollection.WAFER  , 1) );
-    public static readonly Recipe MINE_COPPER  = Add("Mine Copper" , 2, 
-                                                    null,
-                                                    new ItemAmounts().Add(ItemCollection.COPPER , 1) );
-    public static readonly Recipe DRAW_TRACE   = Add("Draw Trace"  , 1, 
-                                                    new ItemAmounts().Add(ItemCollection.COPPER , 1),
-                                                    new ItemAmounts().Add(ItemCollection.TRACE  , 2) );
-    public static readonly Recipe ETCH_CHIP    = Add("Etch Chip"   , 4, 
-                                                    new ItemAmounts().Add(ItemCollection.WAFER  , 3),
-                                                    new ItemAmounts().Add(ItemCollection.CHIP   , 1) );
-    public static readonly Recipe PRINT_BOARD  = Add("Print Board" , 5, 
-                                                    new ItemAmounts().Add(ItemCollection.TRACE  , 4),
-                                                    new ItemAmounts().Add(ItemCollection.BOARD  , 1) );
+    // Entries - All - Food Factory
 
-    // Entries - Machine Specific (First recipe is the default)
-    public static readonly Recipes RECIPES_MINER   = new Recipes()
-                                                        .Add(MINE_SILICON)
-                                                        .Add(MINE_COPPER );
-    public static readonly Recipes RECIPES_SMELTER = new Recipes()
-                                                        .Add(REFINE_WAFER)
-                                                        .Add(DRAW_TRACE  )
-                                                        .Add(ETCH_CHIP   )
-                                                        .Add(PRINT_BOARD );
+    // Farm - Produces Resources
+    public static readonly Recipe GROW_WHEAT = Add("Grow Wheat", 1,
+        null,
+        new ItemAmounts().Add(ItemCollection.WHEAT, 1));
+
+    public static readonly Recipe GROW_BERRIES = Add("Grow Berries", 2,
+        null,
+        new ItemAmounts().Add(ItemCollection.BERRIES, 1));
+
+    public static readonly Recipe COLLECT_MILK = Add("Collect Milk", 2,
+        null,
+        new ItemAmounts().Add(ItemCollection.MILK, 1));
+
+    // Mixer - Processes Resources
+    public static readonly Recipe MILL_FLOUR = Add("Mill Flour", 2,
+        new ItemAmounts().Add(ItemCollection.WHEAT, 1),
+        new ItemAmounts().Add(ItemCollection.FLOUR, 1));
+
+    public static readonly Recipe MAKE_JAM = Add("Make Jam", 3,
+        new ItemAmounts().Add(ItemCollection.BERRIES, 1),
+        new ItemAmounts().Add(ItemCollection.JAM, 1));
+
+    public static readonly Recipe MAKE_CREAM = Add("Make Cream", 3,
+        new ItemAmounts().Add(ItemCollection.MILK, 1),
+        new ItemAmounts().Add(ItemCollection.CREAM, 1));
+
+    // Oven - Produces Finished Food
+    public static readonly Recipe BAKE_BREAD = Add("Bake Bread", 3,
+        new ItemAmounts().Add(ItemCollection.FLOUR, 1),
+        new ItemAmounts().Add(ItemCollection.BREAD, 1));
+
+    public static readonly Recipe BAKE_TART = Add("Bake Tart", 4,
+        new ItemAmounts()
+            .Add(ItemCollection.FLOUR, 1)
+            .Add(ItemCollection.JAM, 1),
+        new ItemAmounts().Add(ItemCollection.TART, 1));
+
+    public static readonly Recipe BAKE_CAKE = Add("Bake Cake", 5,
+        new ItemAmounts()
+            .Add(ItemCollection.FLOUR, 1)
+            .Add(ItemCollection.CREAM, 1),
+        new ItemAmounts().Add(ItemCollection.CAKE, 1));
+
+    // Entries - Machine Specific
+    // First Recipe is Default
+    public static readonly Recipes RECIPES_FARM = new Recipes()
+        .Add(GROW_WHEAT)
+        .Add(GROW_BERRIES)
+        .Add(COLLECT_MILK);
+
+    public static readonly Recipes RECIPES_MIXER = new Recipes()
+        .Add(MILL_FLOUR)
+        .Add(MAKE_JAM)
+        .Add(MAKE_CREAM);
+
+    public static readonly Recipes RECIPES_OVEN = new Recipes()
+        .Add(BAKE_BREAD)
+        .Add(BAKE_TART)
+        .Add(BAKE_CAKE);
 }

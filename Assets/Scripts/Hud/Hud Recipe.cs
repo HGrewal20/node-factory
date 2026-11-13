@@ -54,6 +54,7 @@ public class HudRecipe : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         ColorBlock colors = button.colors;
 
         colors.normalColor      = color;
+        colors.highlightedColor = MenuStyle.BUTTON_COLOR_HIGHLIGHTED;
         colors.selectedColor    = color;
 
         button.colors = colors;

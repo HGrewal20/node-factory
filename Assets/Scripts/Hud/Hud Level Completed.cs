@@ -23,6 +23,10 @@ public class HudLevelCompleted : MonoBehaviour
         buttonNext    .onClick.AddListener(Next    );
         buttonQuit    .onClick.AddListener(Quit    );
 
+        MenuStyle.Apply(buttonContinue);
+        MenuStyle.Apply(buttonNext    );
+        MenuStyle.Apply(buttonQuit    );
+
         panel.SetActive(false);
         IsShowing = false;
     }

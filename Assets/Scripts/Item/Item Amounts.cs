@@ -69,6 +69,11 @@ public class ItemAmounts
     {
         return entries.Count;
     }
+    public int Count(Item item)
+    {
+        ItemAmount entry = Get(item);
+        return (entry == null) ? 0 : entry.Amount;
+    }
 
     public ItemAmount Get(int index)
     {

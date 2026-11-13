@@ -225,6 +225,19 @@ public class MachineNode
         ItemAllowed = amount.Item;
     }
 
+    // Tutorial
+    public bool IsConnected(byte machineTypeIndex)
+    {
+        if ( IsInput          ) return false;
+        if (!IsEnabled        ) return false;
+        if ( Wire      == null) return false;
+
+        Machine machine = Wire.connectionInput.Machine;
+        if ( machine  == null)  return false;
+        
+        return (machine.MachineTypeIndex == machineTypeIndex);
+    }
+    
     // Link
     public void Link(GameLinks links)
     {

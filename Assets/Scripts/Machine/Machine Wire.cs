@@ -5,8 +5,8 @@ public class MachineWire : Machine
 {
     // Member Variables
     public          byte                  Direction         { get; private set; }
-    public readonly MachineWireConnection connectionInput  = new MachineWireConnection(true );
-    public readonly MachineWireConnection connectionOutput = new MachineWireConnection(false);
+    public readonly MachineWireConnection connectionInput  = new MachineWireConnection(true );  // Machine Input , Wire Output
+    public readonly MachineWireConnection connectionOutput = new MachineWireConnection(false);  // Machine Output, Wire Input
 
     // Constructor
     public MachineWire(byte machineTypeIndex, long id)

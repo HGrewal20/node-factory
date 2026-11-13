@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HudRecipes : MonoBehaviour
 {
@@ -7,7 +8,8 @@ public class HudRecipes : MonoBehaviour
     [SerializeField] private Transform        content;
     [SerializeField] private HudRecipe        recipePrefab;
     [SerializeField] private HudRecipeDetails details;
-
+    [SerializeField] private Button           buttonClose;
+    
     // State
     private          MachineProcessor machine;
     private readonly List<HudRecipe>  entries = new();
@@ -16,6 +18,8 @@ public class HudRecipes : MonoBehaviour
     {
         details.gameObject.SetActive(false);
            this.gameObject.SetActive(false);
+
+        MenuStyle.Apply(buttonClose);
     }
 
     private void Update()

@@ -34,33 +34,53 @@ public static class ShopCollection
     private static List<ShopEntry> CreateEntries()
     {
         List<ShopEntry> entries = new();
-        AddEntry(entries, MachineCollection.DELIVERY         ).cost.Add(ItemCollection.WAFER, 20);     // Delivery
-        AddEntry(entries, MachineCollection.FLIPPER_2        ).cost.Add(ItemCollection.WAFER,  5);     // Flippers
-        AddEntry(entries, MachineCollection.FLIPPER_3        ).cost.Add(ItemCollection.WAFER,  8);
-        AddEntry(entries, MachineCollection.FLIPPER_4        ).cost.Add(ItemCollection.WAFER, 10);     // Fixed the duplicate FLIPPER_2 to FLIPPER_4 (Michael)
-        AddEntry(entries, MachineCollection.JUNCTION_A       ).cost.Add(ItemCollection.WAFER,  2);     // Junctions
-        AddEntry(entries, MachineCollection.JUNCTION_B       ).cost.Add(ItemCollection.WAFER,  2);
-        AddEntry(entries, MachineCollection.MERGER_2         ).cost.Add(ItemCollection.WAFER,  5);     // Mergers
-        AddEntry(entries, MachineCollection.MERGER_3         ).cost.Add(ItemCollection.WAFER,  8);
-        AddEntry(entries, MachineCollection.MERGER_4         ).cost.Add(ItemCollection.WAFER, 10);
-        AddEntry(entries, MachineCollection.SPLITTER_2       ).cost.Add(ItemCollection.WAFER,  5);     // Splitters
-        AddEntry(entries, MachineCollection.SPLITTER_3       ).cost.Add(ItemCollection.WAFER,  8);
-        AddEntry(entries, MachineCollection.SPLITTER_4       ).cost.Add(ItemCollection.WAFER, 10);      
-                                                                                                       // Wire Invalid. Don't add it.
-        AddEntry(entries, MachineCollection.PROCESSOR_MINER  ).cost.Add(ItemCollection.WAFER,  8);     // Processors
-        AddEntry(entries, MachineCollection.PROCESSOR_SMELTER).cost.Add(ItemCollection.WAFER, 12).Add(ItemCollection.SILICON, 4);
+
+        // Delivery
+        AddEntry(entries, MachineCollection.DELIVERY).cost.Add(ItemCollection.BREAD, 10);
+
+        // Flippers
+        AddEntry(entries, MachineCollection.FLIPPER_2).cost.Add(ItemCollection.FLOUR, 2);
+        AddEntry(entries, MachineCollection.FLIPPER_3).cost.Add(ItemCollection.FLOUR, 3);
+        AddEntry(entries, MachineCollection.FLIPPER_4).cost.Add(ItemCollection.FLOUR, 4);
+
+        // Junctions
+        AddEntry(entries, MachineCollection.JUNCTION_A).cost.Add(ItemCollection.FLOUR, 1);
+        AddEntry(entries, MachineCollection.JUNCTION_B).cost.Add(ItemCollection.FLOUR, 1);
+
+        // Mergers
+        AddEntry(entries, MachineCollection.MERGER_2).cost.Add(ItemCollection.FLOUR, 2);
+        AddEntry(entries, MachineCollection.MERGER_3).cost.Add(ItemCollection.FLOUR, 3);
+        AddEntry(entries, MachineCollection.MERGER_4).cost.Add(ItemCollection.FLOUR, 4);
+
+        // Splitters
+        AddEntry(entries, MachineCollection.SPLITTER_2).cost.Add(ItemCollection.FLOUR, 2);
+        AddEntry(entries, MachineCollection.SPLITTER_3).cost.Add(ItemCollection.FLOUR, 3);
+        AddEntry(entries, MachineCollection.SPLITTER_4).cost.Add(ItemCollection.FLOUR, 4);
+
+        // Wire is invalid. No shop entry.
+
+        // Food Factory Processors
+        AddEntry(entries, MachineCollection.PROCESSOR_FARM ).cost.Add(ItemCollection.BREAD, 6);
+        AddEntry(entries, MachineCollection.PROCESSOR_MIXER).cost.Add(ItemCollection.FLOUR, 4);
+        AddEntry(entries, MachineCollection.PROCESSOR_OVEN ).cost.Add(ItemCollection.FLOUR, 8);
 
         // Safety Check
-        foreach (ShopEntry entry in entries)    // Matthew says: Michael please note. I limited cost to 4 types of items for display purposes. 
+        CheckEntries(entries);
+
+        // Return Result
+        return entries;
+    }
+    private static void CheckEntries(List<ShopEntry> entries)
+    {
+        foreach (ShopEntry entry in entries)
         {
             ItemAmounts cost = entry.cost;
+
             if (cost.Count() > MAX_SHOP_COST_ENTRIES)
             {
                 UnityEngine.Debug.Log("Error! Shop Entry has too many cost entries. Max allowed is 4. Removing Extras.");
                 cost.Limit(MAX_SHOP_COST_ENTRIES);
             }
         }
-
-        return entries;
     }
 }

@@ -97,6 +97,12 @@ public class Machine
         outputs.InputEmpty();
     }
 
+    // Tutorial
+    public bool IsConnected(byte machineTypeIndex)
+    {
+        return outputs.IsConnected(machineTypeIndex);
+    }
+
     // Link
     public virtual void Link(GameLinks links)
     {

@@ -21,6 +21,7 @@ public class HudShopEntry : MonoBehaviour
 
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener       (Buy);
+        MenuStyle.Apply(button);
 
         Refresh();
     }

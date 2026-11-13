@@ -1,16 +1,19 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuPause : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    // Member Variables
+    [SerializeField] private Button buttonResume;
+    [SerializeField] private Button buttonSave;
+    [SerializeField] private Button buttonRestart;
+    [SerializeField] private Button buttonQuit;
 
-    // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        
+        MenuStyle.Apply(buttonResume );
+        MenuStyle.Apply(buttonSave   );
+        MenuStyle.Apply(buttonRestart);
+        MenuStyle.Apply(buttonQuit   );
     }
 }

@@ -1,16 +1,13 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuLevels : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    // Member Variables
+    [SerializeField] private Button buttonBack;
 
-    // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        
+        MenuStyle.Apply(buttonBack);
     }
 }

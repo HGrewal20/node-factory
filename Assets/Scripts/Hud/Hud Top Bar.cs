@@ -1,11 +1,13 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HudTopBar : MonoBehaviour
 {
     [SerializeField] private TMP_Text textLevel;
     [SerializeField] private TMP_Text textTime;
     [SerializeField] private TMP_Text textCompletion;
+    [SerializeField] private Button   buttonMenu;
 
     private void Update()
     {

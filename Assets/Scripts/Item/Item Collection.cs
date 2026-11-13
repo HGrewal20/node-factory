@@ -29,11 +29,16 @@ public static class ItemCollection
             entry.Debug(indentation);
     }
 
-    // Entries - Circuit Theme (Michael)
-    public static readonly Item SILICON = Add("Silicon"      );
-    public static readonly Item WAFER   = Add("Wafer"        );
-    public static readonly Item COPPER  = Add("Copper"       );
-    public static readonly Item TRACE   = Add("Copper Trace" );
-    public static readonly Item CHIP    = Add("Chip"         );
-    public static readonly Item BOARD   = Add("Circuit Board");
+    // Entries - Food Factory
+    public static readonly Item WHEAT   = Add("Wheat"  );
+    public static readonly Item BERRIES = Add("Berries");
+    public static readonly Item MILK    = Add("Milk"   );
+
+    public static readonly Item FLOUR   = Add("Flour"  );
+    public static readonly Item JAM     = Add("Jam"    );
+    public static readonly Item CREAM   = Add("Cream"  );
+
+    public static readonly Item BREAD   = Add("Bread"  );
+    public static readonly Item TART    = Add("Tart"   );
+    public static readonly Item CAKE    = Add("Cake"   );
 }

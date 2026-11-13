@@ -4,6 +4,23 @@ public class ChangeLog
     /*
     We can share changes here
 
+    Nov 12, 2026 - Matthew
+    - Updated version text
+    - Improved Menu Info: Controls Text
+    - Improved Menu Info: Layout
+    - Prefab: Menu Level Entry: Added semi transparent background and improved layout
+    - Menu Level List: Redesigned to not destroy and create the objects every time
+    - Menu Level List: Updated to reset the scroll to the top when it opens
+    - Made background more opaque for Hud Recipes and Hud Level Completed to improve readability
+    - Added MenuStyle which changes all the button styles to make them them more readable and easier to change
+    - Changed the Hud Level Completed Size and Background Size. Increased the height slighly to give a border.
+    - Hid the Exit button in the Menu Main for the WebGL build since it freezes the game and cannot close it
+    - Updated controls on Itch.io
+    - Fixed the scaling issue on Itch.io
+    - Tested save/load in webgl build. It works for the same session, but not for another session.
+    - Have a possible fix to this save/load issue which must be applied after each build in Matthew Notes
+    - Redesigned the content and levels around a food theme
+
     October 15, 2026 - Matthew
     - MachineProcessor now flushes all nodes when changing recipes
     - Added time remaining.
@@ -117,6 +134,5 @@ public class ChangeLog
     "ArgumentOutOfRangeException: Index was out of range" in the Console every frame.
     Doesn't crash, just floods the log. Repro: place a Miner and Delivery next to each
     other, connect them with a wire.
-
     */
 }

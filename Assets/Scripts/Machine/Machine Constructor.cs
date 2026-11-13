@@ -36,8 +36,11 @@ public static class MachineConstructor
         if (machineTypeIndex == MachineCollection.SPLITTER_3       .Index)   return new Vector2Int(5, 7);
         if (machineTypeIndex == MachineCollection.SPLITTER_4       .Index)   return new Vector2Int(5, 9);
         if (machineTypeIndex == MachineCollection.WIRE             .Index)   return new Vector2Int(1, 1);   // Invalid. Changes size.
-        if (machineTypeIndex == MachineCollection.PROCESSOR_MINER  .Index)   return new Vector2Int(5, 3);
-        if (machineTypeIndex == MachineCollection.PROCESSOR_SMELTER.Index)   return new Vector2Int(5, 3);
-        else                                                                 return new Vector2Int(5, 1);   // Invalid
+        // ----------------------------------------------------------------------------------------------   // Only Make Changes Below Here
+        // Food Factory Processors
+        if (machineTypeIndex == MachineCollection.PROCESSOR_FARM   .Index) return new Vector2Int(5, 3);
+        if (machineTypeIndex == MachineCollection.PROCESSOR_MIXER  .Index) return new Vector2Int(5, 3);
+        if (machineTypeIndex == MachineCollection.PROCESSOR_OVEN   .Index) return new Vector2Int(5, 5);
+        else                                                               return new Vector2Int(5, 1);     // Invalid
     }
 }

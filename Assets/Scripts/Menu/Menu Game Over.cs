@@ -16,6 +16,9 @@ public class MenuGameOver : MonoBehaviour
     {
         buttonRestart.onClick.AddListener(Restart);
         buttonQuit   .onClick.AddListener(Quit   );
+
+        MenuStyle.Apply(buttonRestart);
+        MenuStyle.Apply(buttonQuit   );
     }
 
     public void Refresh()

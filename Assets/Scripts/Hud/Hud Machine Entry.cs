@@ -6,7 +6,7 @@ public class HudMachineEntry : MonoBehaviour
 {
     // Constants
     private static readonly Color colorNormal   = Color.white;
-    private static readonly Color colorSelected = Color.green;
+    private static readonly Color colorSelected = MenuStyle.BUTTON_COLOR_SELECTED;
 
     // Member Variables
     [SerializeField] private TMP_Text           text;
@@ -22,6 +22,8 @@ public class HudMachineEntry : MonoBehaviour
 
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener       (SelectMachine);
+
+        MenuStyle.Apply(button);
 
         Refresh();
     }

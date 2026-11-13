@@ -20,6 +20,7 @@ public class GameData
     public          Level           Level             { get; private set; }     // Can be null
     public          byte            State             { get; private set; }
     public          int             Score             { get; private set; }
+    public          int             TutorialIndex     { get; private set; }
     public          float           TimeElapsed       { get; private set; }
     public          float           TimeRemaining     { get; private set; }
     public          float           Completion        { get; private set; }
@@ -38,6 +39,7 @@ public class GameData
         Level            = null;
         State            = STATE_NONE;
         Score            = 0;
+        TutorialIndex    = 0;
         TimeElapsed      = 0f;
         TimeRemaining    = 0f;
         Completion       = 0f;
@@ -55,6 +57,7 @@ public class GameData
         TimeElapsed   += GameConstants.FRAME_TIME;
         UpdateTimeRemaining();
         UpdateCompletion   ();
+        GameTutorial.Update();
     }
     private void UpdateTimeRemaining()
     {
@@ -102,6 +105,7 @@ public class GameData
         Level            = newLevel;
         State            = STATE_PLAYING;
         Score            = 0;
+        TutorialIndex    = 0;
         TimeElapsed      = 0f;
         TimeRemaining    = newLevel.TimeSec;
     }
@@ -133,6 +137,12 @@ public class GameData
     public bool IsStateFailed   () { return State == STATE_FAILED;      }
 
     public bool CanPlay         () { return IsStatePlaying() || IsStateCompleted(); }
+
+    // Tutorial
+    public void SetTutorialIndex(int tutorialIndex)
+    {
+        TutorialIndex = tutorialIndex;
+    }
 
     // Link
     private void Link()
@@ -175,6 +185,7 @@ public class GameData
         writer           .WriteLevel(Level        );
         writer           .WriteByte (State        );
         writer           .WriteInt  (Score        );
+        writer           .WriteInt  (TutorialIndex);
         writer           .WriteFloat(TimeElapsed  );
         writer           .WriteFloat(TimeRemaining);
         writer           .WriteFloat(Completion   );
@@ -191,6 +202,7 @@ public class GameData
         Level            = reader.ReadLevel();
         State            = reader.ReadByte ();
         Score            = reader.ReadInt  ();
+        TutorialIndex    = reader.ReadInt  ();
         TimeElapsed      = reader.ReadFloat();
         TimeRemaining    = reader.ReadFloat();
         Completion       = reader.ReadFloat();
@@ -214,6 +226,7 @@ public class GameData
         DebugFile.Log("Level:         " + levelIndex   , indentation);
         DebugFile.Log("State:         " + State        , indentation);
         DebugFile.Log("Score:         " + Score        , indentation);
+        DebugFile.Log("TutorialIndex: " + TutorialIndex, indentation);
         DebugFile.Log("TimeElapsed:   " + TimeElapsed  , indentation);
         DebugFile.Log("TimeRemaining: " + TimeRemaining, indentation);
         DebugFile.Log("Completion:    " + Completion   , indentation);

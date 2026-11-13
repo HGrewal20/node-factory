@@ -174,7 +174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.49803922}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.7529412}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -214,6 +214,7 @@ MonoBehaviour:
   content: {fileID: 802793375}
   recipePrefab: {fileID: 2988607542298318577, guid: c7f1048566565bc43a5204135050dde3, type: 3}
   details: {fileID: 1536231234}
+  buttonClose: {fileID: 62828589}
 --- !u!1001 &28415592
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -531,7 +532,7 @@ GameObject:
   - component: {fileID: 62828590}
   - component: {fileID: 62828589}
   m_Layer: 5
-  m_Name: Button Exit
+  m_Name: Button Close
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1752,7 +1753,7 @@ GameObject:
   - component: {fileID: 231209990}
   - component: {fileID: 231209989}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2459,17 +2460,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 333990510}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1914355197}
+  m_Father: {fileID: 1302927229}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 300, y: 60}
+  m_SizeDelta: {x: 1920, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &333990512
 MonoBehaviour:
@@ -2491,7 +2492,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 00:00:00
+  m_text: 'Tutorial: Put instructions here for the player'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2518,8 +2519,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60
-  m_fontSizeBase: 60
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3015,6 +3016,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ccd2f6a955bcda4784ee11cd5d76ad7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuPause
+  buttonResume: {fileID: 737591889}
+  buttonSave: {fileID: 291475634}
+  buttonRestart: {fileID: 1767204277}
+  buttonQuit: {fileID: 1791422890}
 --- !u!1 &423448145
 GameObject:
   m_ObjectHideFlags: 0
@@ -3068,6 +3073,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2505fe6dc1b6b9b458fe53a480723bbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuLevels
+  buttonBack: {fileID: 622390459}
 --- !u!114 &423448148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3083,6 +3089,7 @@ MonoBehaviour:
   menuController: {fileID: 1104877563}
   entryPrefab: {fileID: 9186666194436091332, guid: a75f51c92e1cc964da03530499db7564, type: 3}
   content: {fileID: 569710503}
+  scrollRect: {fileID: 760106741}
 --- !u!1 &425310208
 GameObject:
   m_ObjectHideFlags: 0
@@ -3706,7 +3713,7 @@ GameObject:
   - component: {fileID: 494769718}
   - component: {fileID: 494769717}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4425,8 +4432,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -500, y: 0}
-  m_SizeDelta: {x: 700, y: 600}
+  m_AnchoredPosition: {x: -400, y: 0}
+  m_SizeDelta: {x: 900, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &573261261
 MonoBehaviour:
@@ -4448,7 +4455,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "CONTROLS\n\n                   Scroll - WASD / Arrow Keys\n                   Zoom - Mouse Wheel\n   Place / Connect - Left Click\nRemove Machine - Right Click\n    Select Machine - 1\u20138\n  Pause / Resume - Escape"
+  m_text: "CONTROLS\n\n                  Scroll - WASD / Arrow Keys\n                  Zoom - Mouse Wheel\n   Select Machine - 1\u20139\n    Place Machine - Left Click Into Map\nConnect Machine - Left Click Machine Node\n  Machine Recipe - Left Click Machine Empty\nRemove Machine - Right Click\n Pause / Resume - Escape"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5788,7 +5795,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 500, y: 480}
+  m_SizeDelta: {x: 500, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &822784485
 MonoBehaviour:
@@ -5803,7 +5810,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.49803922}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.7529412}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5998,6 +6005,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39d632c57c94270478d84ccad636779d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuInfo
+  buttonBack: {fileID: 583794867}
 --- !u!1001 &879893702
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7135,7 +7143,7 @@ GameObject:
   - component: {fileID: 1040851011}
   - component: {fileID: 1040851010}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7148,17 +7156,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1040851008}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1287410866}
+  m_Father: {fileID: 1302927229}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 400, y: 100}
+  m_SizeDelta: {x: 1920, y: 45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1040851010
 MonoBehaviour:
@@ -9321,7 +9329,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1040851009}
   - {fileID: 233860454}
   m_Father: {fileID: 1971168614}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9330,6 +9337,58 @@ RectTransform:
   m_AnchoredPosition: {x: 759.6, y: 490}
   m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1302927228
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1302927229}
+  - component: {fileID: 1302927230}
+  m_Layer: 5
+  m_Name: Hud Tutorial
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1302927229
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1302927228}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1040851009}
+  - {fileID: 333990511}
+  m_Father: {fileID: 1684693920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 410}
+  m_SizeDelta: {x: 1920, y: 45}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1302927230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1302927228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1f856d96a3a29f44a6682a0100e9163, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HudTutorial
+  text: {fileID: 333990512}
+  background: {fileID: 1040851008}
 --- !u!1 &1329001476
 GameObject:
   m_ObjectHideFlags: 0
@@ -10354,6 +10413,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c91cbc3f83a6dab419f64fe22dc806a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuMain
+  buttonPlay: {fileID: 1973821577}
+  buttonInfo: {fileID: 1560480648}
+  buttonQuit: {fileID: 1642074721}
   textVersion: {fileID: 128421864}
 --- !u!1 &1536231232
 GameObject:
@@ -11273,6 +11335,7 @@ RectTransform:
   m_Children:
   - {fileID: 1013150308}
   - {fileID: 1971168614}
+  - {fileID: 1302927229}
   - {fileID: 1385048464}
   - {fileID: 2124077522}
   - {fileID: 1704249354}
@@ -13673,7 +13736,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 494769716}
-  - {fileID: 333990511}
   m_Father: {fileID: 1971168614}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -13972,8 +14034,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 450, y: 0}
-  m_SizeDelta: {x: 700, y: 600}
+  m_AnchoredPosition: {x: 500, y: -30}
+  m_SizeDelta: {x: 500, y: 760}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1950837484
 MonoBehaviour:
@@ -13995,7 +14057,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "ABOUT\n\nNode Factory\n\"Connect. Process. Deliver!\u2122\n\nCOMP 305\nGame Programming 1\nFall 2026\n\nHarjap Grewal\nMichael Kendrick\nMatthew Ouellette\n\nCopyright \xA9 2026 Node Factory Team"
+  m_text: "ABOUT\n\nNode Factory\n\"Connect. Process. Deliver!\u2122\n\nCOMP 305\nGame Programming 1\nFall 2026\n\nHarjap Grewal\nMichael Kendrick\nMatthew Ouellette\n\nCopyright \xA9 2026\nNode Factory Team"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -14130,6 +14192,7 @@ MonoBehaviour:
   textLevel: {fileID: 1546483412}
   textTime: {fileID: 333990512}
   textCompletion: {fileID: 233860455}
+  buttonMenu: {fileID: 425310210}
 --- !u!1 &1973403649
 GameObject:
   m_ObjectHideFlags: 0
@@ -15206,7 +15269,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 500, y: 480}
+  m_SizeDelta: {x: 500, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2124077523
 MonoBehaviour:

@@ -4,16 +4,19 @@ using UnityEngine.InputSystem;
 
 public class DisplayInteraction : MonoBehaviour
 {
+    public static DisplayInteraction INSTANCE { get; private set; }
+
     private static readonly MachineType[] HOTBAR =
     {
-        MachineCollection.PROCESSOR_MINER,
-        MachineCollection.PROCESSOR_SMELTER,
-        MachineCollection.DELIVERY,
-        MachineCollection.SPLITTER_2,
-        MachineCollection.MERGER_2,
-        MachineCollection.FLIPPER_2,
-        MachineCollection.JUNCTION_A,
-        MachineCollection.JUNCTION_B,
+        MachineCollection.PROCESSOR_FARM,       // 0
+        MachineCollection.PROCESSOR_MIXER,      // 1
+        MachineCollection.PROCESSOR_OVEN,       // 2
+        MachineCollection.DELIVERY,             // 3
+        MachineCollection.SPLITTER_2,           // 4
+        MachineCollection.MERGER_2,             // 5
+        MachineCollection.FLIPPER_2,            // 6
+        MachineCollection.JUNCTION_A,           // 7
+        MachineCollection.JUNCTION_B,           // 8
     };
 
     private const float PAN_SCREEN_FRACTION_PER_SECOND = 0.75f;
@@ -46,6 +49,11 @@ public class DisplayInteraction : MonoBehaviour
 
         selectedType = MachineCollection.WIRE.Index;
         return true;
+    }
+
+    private void Awake()
+    {
+        INSTANCE = this;
     }
 
     private void Update()
@@ -158,6 +166,7 @@ public class DisplayInteraction : MonoBehaviour
         if (keyboard.digit6Key.wasPressedThisFrame) SelectHotbar(5);
         if (keyboard.digit7Key.wasPressedThisFrame) SelectHotbar(6);
         if (keyboard.digit8Key.wasPressedThisFrame) SelectHotbar(7);
+        if (keyboard.digit9Key.wasPressedThisFrame) SelectHotbar(8);
     }
 
     private void SelectHotbar(int index)

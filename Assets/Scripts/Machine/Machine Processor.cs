@@ -102,20 +102,23 @@ public class MachineProcessor : Machine
 
     public Recipes GetRecipes()
     {
-        if ( IsMiner  () )  return RecipeCollection.RECIPES_MINER;
-        if ( IsSmelter() )  return RecipeCollection.RECIPES_SMELTER;
-        else                return null;
+        if (IsFarm ()) return RecipeCollection.RECIPES_FARM;
+        if (IsMixer()) return RecipeCollection.RECIPES_MIXER;
+        if (IsOven ()) return RecipeCollection.RECIPES_OVEN;
+        else           return null;
     }
 
     // Getters
-    public bool IsMiner  () { return (MachineTypeIndex == MachineCollection.PROCESSOR_MINER  .Index); }
-    public bool IsSmelter() { return (MachineTypeIndex == MachineCollection.PROCESSOR_SMELTER.Index); }
+    public bool IsFarm () { return MachineTypeIndex == MachineCollection.PROCESSOR_FARM .Index; }
+    public bool IsMixer() { return MachineTypeIndex == MachineCollection.PROCESSOR_MIXER.Index; }
+    public bool IsOven () { return MachineTypeIndex == MachineCollection.PROCESSOR_OVEN .Index; }
 
     private int Height()
     {
-        if ( IsMiner  () )  return 3;
-        if ( IsSmelter() )  return 3;
-        else                return 3;
+        if (IsFarm ()) return 3;
+        if (IsMixer()) return 3;
+        if (IsOven ()) return 5;
+        else           return 3;
     }
 
     public bool IsStateIdle   () { return (State == STATE_IDLE   ); }

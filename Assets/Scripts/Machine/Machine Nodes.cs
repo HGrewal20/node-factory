@@ -143,6 +143,16 @@ public class MachineNodes
         return null;
     }
 
+    // Tutorial
+    public bool IsConnected(byte machineTypeIndex)
+    {
+        foreach (MachineNode entry in entries)
+            if ( entry.IsConnected(machineTypeIndex) )
+                return true;
+
+        return false;
+    }
+
     // Link
     public void Link(GameLinks links)
     {

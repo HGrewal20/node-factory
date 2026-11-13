@@ -41,12 +41,21 @@ public class Machines
     {
         return entries.Count;
     }
+    public int Count(byte machineType)
+    {
+        int count = 0;
+
+        foreach (Machine machine in entries)
+            if (machine.MachineTypeIndex == machineType)
+                count++;
+
+        return count;
+    }
 
     public Machine Get(int index)
     {
         return entries[index];
     }
-
     public Machine Get(Machine other)
     {
         foreach (Machine entry in entries)
@@ -60,12 +69,31 @@ public class Machines
     {
         return Get(other) != null;
     }
+    public bool IsContained(byte machineType)
+    {
+        foreach (Machine machine in entries)
+            if (machine.MachineTypeIndex == machineType)
+                return true;
+
+        return false;
+    }
 
     // Game Tick
     public void GameTick()
     {
         foreach (Machine entry in entries)
             entry.GameTick();
+    }
+
+    // Tutorial
+    public bool IsConnected(byte machineTypeIndexSrc, byte machineTypeIndexDest)
+    {
+        foreach (Machine entry in entries)
+            if (entry.MachineTypeIndex == machineTypeIndexSrc)
+                if ( entry.IsConnected(machineTypeIndexDest) )
+                    return true;
+                    
+        return false;
     }
 
     // Link
